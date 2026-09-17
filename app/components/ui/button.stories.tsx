@@ -1,24 +1,42 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Loader2, Mail } from "lucide-react";
+import { Mail, Plus } from "lucide-react";
+import type { ComponentProps } from "react";
+import { fn } from "storybook/test";
 
-import { Button } from "~/components/ui/button";
+import { Button, twButtonIconSizeClasses, twButtonSizeClasses, twButtonVariantClasses } from "./button";
 
-/**
- * Displays a button or a component that looks like a button.
- */
-const meta: Meta<typeof Button> = {
-  title: "ui/base/Button",
+/*===== Story Options =====*/
+
+const variantOptions = Object.keys(twButtonVariantClasses) as Array<keyof typeof twButtonVariantClasses>;
+const buttonSizeOptions = Object.keys(twButtonSizeClasses) as Array<keyof typeof twButtonSizeClasses>;
+const iconSizeOptions = Object.keys(twButtonIconSizeClasses) as Array<keyof typeof twButtonIconSizeClasses>;
+const iconPositionOptions = ["inline-start", "inline-end"] as const;
+const sectionClassName = "flex flex-wrap items-center gap-3";
+
+/*===== Metadata =====*/
+
+const meta = {
+  title: "UI/Button",
   component: Button,
+  decorators: [
+    (Story) => (
+      <div dir="rtl" lang="fa">
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: {
+    layout: "centered",
+  },
   tags: ["autodocs"],
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "destructive", "outline", "secondary", "ghost", "link"],
+      options: variantOptions,
     },
     size: {
       control: "select",
-      options: ["default", "xs", "sm", "lg", "icon", "icon-xs", "icon-sm", "icon-lg"],
-      if: { arg: "variant", neq: "link" },
+      options: buttonSizeOptions,
     },
     children: {
       control: "text",
@@ -26,170 +44,139 @@ const meta: Meta<typeof Button> = {
     disabled: {
       control: "boolean",
     },
-  },
-  parameters: {
-    layout: "centered",
+    onClick: {
+      control: false,
+    },
   },
   args: {
+    children: "دکمه",
     variant: "default",
     size: "default",
-    children: "Button",
     disabled: false,
+    onClick: fn(),
   },
 } satisfies Meta<typeof Button>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-/**
- * The default form of the button, used for primary actions and commands.
- */
-export const Default: Story = {};
-
-/**
- * Use the `outline` button to reduce emphasis on secondary actions, such as
- * canceling or dismissing a dialog.
- */
-export const Outline: Story = {
-  args: {
-    variant: "outline",
-  },
+type ButtonWithIconArgs = ComponentProps<typeof Button> & {
+  iconPosition: (typeof iconPositionOptions)[number];
 };
 
-/**
- * Use the `ghost` button is minimalistic and subtle, for less intrusive
- * actions.
- */
-export const Ghost: Story = {
-  args: {
-    variant: "ghost",
-  },
-};
+/*===== Story Helpers =====*/
 
-/**
- * Use the `secondary` button to call for less emphasized actions, styled to
- * complement the primary button while being less conspicuous.
- */
-export const Secondary: Story = {
-  args: {
-    variant: "secondary",
-  },
-};
+function StoryIcon({ position }: { position: (typeof iconPositionOptions)[number] }) {
+  return <Plus aria-hidden="true" data-icon={position} />;
+}
 
-/**
- * Use the `destructive` button to indicate errors, alerts, or the need for
- * immediate attention.
- */
-export const Destructive: Story = {
-  args: {
-    variant: "destructive",
-  },
-};
+/*===== Controls =====*/
 
-/**
- * Use the `link` button to reduce emphasis on tertiary actions, such as
- * hyperlink or navigation, providing a text-only interactive element.
- */
-export const Link: Story = {
-  args: {
-    variant: "link",
-  },
-};
+export const Controls = {} satisfies Story;
 
-/**
- * Add the `disabled` prop to a button to prevent interactions and add a
- * loading indicator, such as a spinner, to signify an in-progress action.
- */
-export const Loading: Story = {
+/*===== Variants =====*/
+
+export const Variants = {
+  // These args are fixed by the gallery, so editable controls would be misleading.
+  argTypes: {
+    variant: { control: false },
+    children: { control: false },
+  },
   render: (args) => (
-    <Button {...args}>
-      <Loader2 className="me-2 h-4 w-4 animate-spin" />
-      Button
-    </Button>
+    <div className={sectionClassName}>
+      {variantOptions.map((variant) => (
+        <Button key={variant} {...args} variant={variant}>
+          {variant}
+        </Button>
+      ))}
+    </div>
   ),
-  args: {
-    ...Outline.args,
-    disabled: true,
-  },
-};
+} satisfies Story;
 
-/**
- * Add an icon element to a button to enhance visual communication and
- * providing additional context for the action.
- */
-export const WithIcon: Story = {
+/*===== Button Sizes =====*/
+
+export const ButtonSizes = {
+  argTypes: {
+    size: { control: false },
+    children: { control: false },
+  },
   render: (args) => (
-    <Button {...args}>
-      <Mail className="me-2 h-4 w-4" /> Login with Email Button
-    </Button>
+    <div className={sectionClassName}>
+      {buttonSizeOptions.map((size) => (
+        <Button key={size} {...args} size={size}>
+          دکمه
+        </Button>
+      ))}
+    </div>
   ),
-  args: {
-    ...Secondary.args,
-  },
-};
+} satisfies Story;
 
-/**
- * Use the `sm` size for a smaller button, suitable for interfaces needing
- * compact elements without sacrificing usability.
- */
-export const Small: Story = {
-  args: {
-    size: "sm",
-  },
-};
+/*===== Button With Icon =====*/
 
-/**
- * Use the `lg` size for a larger button, offering better visibility and
- * easier interaction for users.
- */
-export const Large: Story = {
-  args: {
-    size: "lg",
+export const ButtonWithIcon = {
+  argTypes: {
+    iconPosition: {
+      control: "inline-radio",
+      options: iconPositionOptions,
+    },
   },
-};
-
-/**
- * Use the "icon" size for a button with only an icon.
- */
-export const Icon: Story = {
   args: {
-    ...Secondary.args,
+    iconPosition: "inline-start",
+  },
+  render: ({ children, iconPosition, ...args }) => {
+    const icon = <StoryIcon position={iconPosition} />;
+
+    return (
+      <Button {...args}>
+        {iconPosition === "inline-start" ? (
+          <>
+            {icon}
+            {children}
+          </>
+        ) : (
+          <>
+            {children}
+            {icon}
+          </>
+        )}
+      </Button>
+    );
+  },
+} satisfies StoryObj<ButtonWithIconArgs>;
+
+/*===== Icon Button =====*/
+
+export const IconButton = {
+  argTypes: {
+    children: { control: false },
+    size: { options: iconSizeOptions },
+    "aria-label": { control: "text" },
+  },
+  args: {
     size: "icon",
-    title: "Mail",
-    children: <Mail />,
+    "aria-label": "ارسال پیام",
   },
-};
+  render: (args) => (
+    <Button {...args}>
+      <Mail aria-hidden="true" />
+    </Button>
+  ),
+} satisfies Story;
 
-/**
- * Use the `icon-sm` size for a smaller icon-only button.
- */
-export const IconSmall: Story = {
-  args: {
-    variant: "secondary",
-    size: "icon-sm",
-    title: "Mail",
-    children: <Mail />,
-  },
-};
+/*===== Icon Sizes =====*/
 
-/**
- * Use the `icon-lg` size for a larger icon-only button.
- */
-export const IconLarge: Story = {
-  args: {
-    variant: "secondary",
-    size: "icon-lg",
-    title: "Mail",
-    children: <Mail />,
+export const IconSizes = {
+  argTypes: {
+    size: { control: false },
+    children: { control: false },
   },
-};
-
-/**
- * Add the `disabled` prop to prevent interactions with the button.
- */
-export const Disabled: Story = {
-  args: {
-    disabled: true,
-  },
-};
+  render: (args) => (
+    <div className={sectionClassName}>
+      {iconSizeOptions.map((size) => (
+        <Button key={size} {...args} aria-label={`افزودن (${size})`} size={size}>
+          <Plus aria-hidden="true" />
+        </Button>
+      ))}
+    </div>
+  ),
+} satisfies Story;
