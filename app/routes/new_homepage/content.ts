@@ -1,0 +1,271 @@
+import type { LucideIcon } from "lucide-react";
+import { BookOpen, GraduationCap, Monitor, UserRound, Utensils, Globe2 } from "lucide-react";
+
+import biomedicalFaculty from "~/assets/achievement-biomedical-faculty.jpg";
+import batteryTraining from "~/assets/event-battery-maintenance-training.jpg";
+import controlledBlasting from "~/assets/event-controlled-blasting-workshop.jpg";
+import steamPlant from "~/assets/event-steam-power-plant-training.jpg";
+import athletics from "~/assets/news-athletics-olympiad.jpg";
+import staffMeeting from "~/assets/news-staff-meeting.jpg";
+import sustainableEnergy from "~/assets/news-sustainable-energy-journal.jpg";
+
+/*===== Content Contracts =====*/
+export type UniversityLink = { label: string; href: string };
+
+export type UniversityStory = {
+  id: string;
+  title: string;
+  category: string;
+  summary: string;
+  image: string;
+  imageAlt: string;
+  href: string;
+  date?: string;
+};
+
+/*===== University Destinations =====*/
+export const destinations = {
+  portal: "https://hut.ac.ir/",
+  about: "https://hut.ac.ir/معرفی-دانشگاه",
+  contact: "https://hut.ac.ir/ارتباط-با-ما",
+  systems: "https://hut.ac.ir/سامانه-ها",
+  administration: "https://hut.ac.ir/اداری-و-مالی",
+  calendar: "https://hut.ac.ir/web/edu/تقویم-آموزشی",
+  calendarAnnouncement: "https://hut.ac.ir/fa/w/-772?redirect=%2F",
+  newStudents: "https://edu.hut.ac.ir/ngs1403",
+  departments: "https://hut.ac.ir/groups",
+  faculty: "https://hut.ac.ir/اعضای-هیات-علمی",
+  forms: "https://hut.ac.ir/university-forms",
+  phonebook: "https://hut.ac.ir/تلفن-داخلی",
+  english: "https://en.hut.ac.ir/en",
+  login: "https://hut.ac.ir/c/portal/login?p_l_id=13",
+  growthCenter: "https://hut.ac.ir/web/roshd",
+  eitaa: "https://eitaa.com/info_hut",
+  aparat: "https://www.aparat.com/hut.university",
+  linkedin: "https://www.linkedin.com/school/hamedan-university-of-technology/",
+  email: "mailto:info@hut.ac.ir",
+  phone: "tel:+988138411000",
+  studentVideo:
+    "https://www.hut.ac.ir/documents/38165/18249686/Jashan_k.mp4/edc8272b-fcd3-35f7-a75d-20655049dd8f?t=1768803535763",
+} as const;
+
+/*===== Navigation =====*/
+export const navigationGroups: { label: string; description: string; links: UniversityLink[] }[] = [
+  {
+    label: "دانشگاه",
+    description: "با دانشگاه صنعتی همدان آشنا شوید",
+    links: [
+      { label: "معرفی دانشگاه", href: destinations.about },
+      { label: "اعضای هیئت علمی", href: destinations.faculty },
+      { label: "حوزه ریاست", href: "https://hut.ac.ir/حوزه-ریاست" },
+      { label: "فرم‌ها و آیین‌نامه‌ها", href: destinations.forms },
+      { label: "دفترچه تلفن", href: destinations.phonebook },
+    ],
+  },
+  {
+    label: "آموزش",
+    description: "مسیر یادگیری و خدمات آموزشی",
+    links: [
+      { label: "معاونت آموزشی", href: "https://hut.ac.ir/معاونت-آموزشی2" },
+      { label: "گروه‌های آموزشی", href: destinations.departments },
+      { label: "تقویم آموزشی", href: destinations.calendar },
+      { label: "راهنمای نودانشجویان", href: destinations.newStudents },
+    ],
+  },
+  {
+    label: "پژوهش و فناوری",
+    description: "از ایده تا ارتباط با صنعت",
+    links: [
+      { label: "مدیریت پژوهشی", href: "https://hut.ac.ir/معاون-پژوهشی-جدید" },
+      { label: "آزمایشگاه‌ها", href: "https://hut.ac.ir/آزمایشگاه" },
+      { label: "ارتباط با صنعت", href: "http://industry.hut.ac.ir/" },
+      { label: "مرکز رشد و کارآفرینی", href: destinations.growthCenter },
+      { label: "کتابخانه مرکزی", href: "http://library.hut.ac.ir" },
+    ],
+  },
+  {
+    label: "دانشجویی و فرهنگی",
+    description: "زندگی و تجربه دانشجویی",
+    links: [
+      { label: "معاونت دانشجویی و فرهنگی", href: "https://hut.ac.ir/معاونت-دانشجویی-جدید" },
+      { label: "خدمات رفاهی دانشجویان", href: "https://student.hut.ac.ir/خدمات-رفاهی-دانشجویی" },
+      { label: "مرکز مشاوره و سبک زندگی", href: "http://counseling.hut.ac.ir" },
+      { label: "کانون‌های فرهنگی و هنری", href: "https://student.hut.ac.ir/کانون-های-فرهنگی" },
+    ],
+  },
+];
+
+/*===== Service Shortcuts =====*/
+export const services: (UniversityLink & { icon: LucideIcon; description: string })[] = [
+  { label: "سامانه گلستان", href: "http://golestan.hut.ac.ir/", icon: GraduationCap, description: "خدمات آموزشی" },
+  { label: "درس‌افزار", href: "https://ec.hut.ac.ir/", icon: Monitor, description: "یادگیری الکترونیکی" },
+  { label: "سامانه تغذیه", href: "http://nutrition.hut.ac.ir/", icon: Utensils, description: "رزرو غذای دانشجویی" },
+  { label: "کتابخانه مرکزی", href: "http://library.hut.ac.ir", icon: BookOpen, description: "منابع و پایگاه‌های علمی" },
+  { label: "سامانه ساجد", href: "https://sajed.hut.ac.ir", icon: UserRound, description: "خدمات دانشگاهی" },
+  { label: "آموزش‌های آزاد", href: "https://academics.hut.ac.ir", icon: Globe2, description: "دوره‌های مهارتی" },
+];
+
+/*===== News and Announcements =====*/
+// The legacy mock article paths are not canonical CMS URLs. Until a permalink is
+// available, stories point to the official portal rather than inventing pages.
+export const news: UniversityStory[] = [
+  {
+    id: "staff-meeting",
+    title: "دیدار رئیس دانشگاه با کارکنان به مناسبت هفته دولت",
+    category: "دانشگاه",
+    summary:
+      "نشست رئیس دانشگاه صنعتی همدان و اعضای هیئت‌رئیسه با کارکنان غیرهیئت‌علمی، با حضور معاونان و جمعی از همکاران دانشگاه برگزار شد.",
+    image: staffMeeting,
+    imageAlt: "نشست رئیس دانشگاه صنعتی همدان با کارکنان",
+    date: "۱۰ شهریور ۱۴۰۵",
+    href: destinations.portal,
+  },
+  {
+    id: "student-athletics",
+    title: "درخشش ورزشکاران دانشگاه در المپیاد دانشجویان",
+    category: "دانشجویی",
+    summary: "کسب مدال طلای کاراته، مقام پنجم کشتی فرنگی و جایگاه هشتم تیراندازی در هفدهمین المپیاد ورزشی دانشجویان.",
+    image: athletics,
+    imageAlt: "نتایج ورزشکاران دانشگاه در المپیاد دانشجویان",
+    date: "۹ شهریور ۱۴۰۵",
+    href: destinations.portal,
+  },
+  {
+    id: "isc-journal",
+    title: "نمایه‌شدن نشریه علمی دانشگاه در پایگاه ISC",
+    category: "پژوهش",
+    summary: "نشریه انرژی پایدار و هوش مصنوعی دانشگاه در پایگاه استنادی علوم جهان اسلام نمایه شد.",
+    image: sustainableEnergy,
+    imageAlt: "نشریه انرژی پایدار و هوش مصنوعی و نشان ISC",
+    date: "۷ مرداد ۱۴۰۵",
+    href: destinations.portal,
+  },
+];
+
+export const notices = [
+  {
+    id: "notice-thesis-defence",
+    day: "۱۵",
+    month: "شهریور",
+    title: "مهلت دفاع از پایان‌نامه کارشناسی ارشد در نیم‌سال دوم",
+    owner: "معاونت آموزشی و پژوهشی",
+  },
+  {
+    id: "notice-mining-seminar",
+    day: "۱۵",
+    month: "شهریور",
+    title: "برگزاری جلسه دفاع از سمینار کارشناسی ارشد مهندسی معدن",
+    owner: "گروه مهندسی معدن",
+  },
+  {
+    id: "notice-course-enrolment",
+    day: "۱۴",
+    month: "شهریور",
+    title: "اطلاعیه انتخاب واحد نیم‌سال اول سال تحصیلی ۱۴۰۵–۱۴۰۶",
+    owner: "اداره خدمات آموزشی",
+  },
+  {
+    id: "notice-study-permission",
+    day: "۱۴",
+    month: "شهریور",
+    title: "ثبت درخواست مجوز ادامه تحصیل برای دانشجویان مشروطی",
+    owner: "اداره خدمات آموزشی",
+  },
+];
+
+/*===== Academic Calendar =====*/
+// These source dates belong to the second semester of 1404–1405. Keep the
+// semester explicit and never imply that a hard-coded milestone is current.
+export const academicCalendar = [
+  { day: "۲۶–۲۹", month: "بهمن ۱۴۰۴", title: "انتخاب واحد" },
+  { day: "۲", month: "اسفند ۱۴۰۴", title: "شروع کلاس‌ها" },
+  { day: "۱۰–۱۱", month: "اسفند ۱۴۰۴", title: "حذف و اضافه" },
+  { day: "۱۷–۱۸", month: "خرداد ۱۴۰۵", title: "حذف تک‌درس" },
+  { day: "۱۶–۲۹", month: "خرداد ۱۴۰۵", title: "ارزشیابی اساتید" },
+  { day: "۳", month: "تیر ۱۴۰۵", title: "پایان کلاس‌ها" },
+  { day: "۶–۲۲", month: "تیر ۱۴۰۵", title: "امتحانات" },
+];
+
+/*===== University Profile =====*/
+export const universityStats = [
+  { value: 2300, label: "دانشجو", suffix: "+" },
+  { value: 115, label: "عضو هیئت علمی" },
+  { value: 8, label: "گروه آموزشی" },
+  { value: 2200, label: "دانش‌آموخته", suffix: "+" },
+  { value: 2400, label: "مقاله علمی", suffix: "+" },
+  { value: 75, label: "کارمند" },
+];
+
+/*===== Achievements and Courses =====*/
+export const achievements: UniversityStory[] = [
+  {
+    ...news[2],
+    id: "achievement-isc",
+    category: "دستاورد پژوهشی",
+    title: "انرژی پایدار و هوش مصنوعی؛ در جمع نشریات ISC",
+  },
+  {
+    id: "achievement-faculty",
+    title: "ارتقای علمی اعضای هیئت علمی مهندسی پزشکی",
+    category: "اعضای هیئت علمی",
+    summary: "آخرین احکام ارتقای مرتبه علمی اعضای هیئت علمی گروه مهندسی پزشکی دانشگاه صنعتی همدان.",
+    image: biomedicalFaculty,
+    imageAlt: "اعضای هیئت علمی گروه مهندسی پزشکی",
+    href: destinations.portal,
+  },
+  {
+    ...news[1],
+    id: "achievement-athletics",
+    category: "افتخار دانشجویی",
+    title: "افتخارآفرینی دانشجویان در میدان ورزش",
+  },
+];
+
+export const courses: UniversityStory[] = [
+  {
+    id: "controlled-blasting",
+    title: "آشنایی با آتشباری کنترل‌شده",
+    category: "کارگاه تخصصی",
+    summary: "آموزش کاربردی برای توسعه مهارت‌های تخصصی دانشجویان و فعالان صنعت.",
+    image: controlledBlasting,
+    imageAlt: "کارگاه تخصصی آتشباری کنترل‌شده",
+    href: destinations.portal,
+  },
+  {
+    id: "battery-training",
+    title: "دوره باتری و اصول نگهداری آن",
+    category: "آموزش صنعت",
+    summary: "دوره کوتاه‌مدت ویژه کارکنان نیروگاه شهید مفتح با همکاری دانشگاه.",
+    image: batteryTraining,
+    imageAlt: "دوره آموزشی باتری و اصول نگهداری",
+    href: destinations.portal,
+  },
+  {
+    id: "steam-plant",
+    title: "دوره آموزشی کنترل نیروگاه بخار",
+    category: "دانشگاه و صنعت",
+    summary: "ارتقای دانش فنی کارکنان صنعت با بهره‌گیری از ظرفیت علمی دانشگاه.",
+    image: steamPlant,
+    imageAlt: "برگزاری دوره آموزشی کنترل نیروگاه بخار",
+    href: destinations.portal,
+  },
+];
+
+/*===== Local Search Index =====*/
+export const searchGroups: { label: string; links: UniversityLink[] }[] = [
+  { label: "سامانه‌ها و خدمات", links: services.map(({ label, href }) => ({ label, href })) },
+  { label: "بخش‌های دانشگاه", links: navigationGroups.flatMap((group) => group.links) },
+  {
+    label: "مطالب این صفحه",
+    links: [
+      { label: "تقویم آموزشی نیم‌سال اول ۱۴۰۵–۱۴۰۶", href: "#academic-announcement" },
+      ...news.map((story) => ({ label: story.title, href: `#${story.id}` })),
+      ...notices.map((notice) => ({ label: notice.title, href: `#${notice.id}` })),
+      ...achievements.map((story) => ({ label: story.title, href: `#${story.id}` })),
+      ...courses.map((story) => ({ label: story.title, href: `#${story.id}` })),
+      { label: "اطلاعیه‌های دانشگاه", href: "#university-notices" },
+      { label: "تقویم آموزشی دانشگاه", href: "#academic-calendar" },
+      { label: "ارتباط با دانشگاه", href: "#university-contact" },
+    ],
+  },
+];

@@ -2,10 +2,12 @@ import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration }
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { DirectionProvider } from "./components/ui/direction";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="fa" dir="rtl">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,7 +15,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <DirectionProvider direction="rtl">
+          <TooltipProvider>{children}</TooltipProvider>
+        </DirectionProvider>
+
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -1,0 +1,202 @@
+import { ArrowLeft, ArrowUpLeft, GraduationCap, Mail, MapPin, MessagesSquare, Phone } from "lucide-react";
+
+import { Button } from "~/components/ui/button";
+
+import { destinations, services } from "../content";
+import { Brand } from "./brand";
+import { PageContainer, TextLink } from "./layout";
+
+/*===== Student Guidance and University Contact =====*/
+export function StudentSupport() {
+  return (
+    <section
+      id="university-contact"
+      tabIndex={-1}
+      aria-labelledby="support-title"
+      className="scroll-mt-28 py-14 focus-visible:outline-2 focus-visible:outline-ring sm:py-20"
+    >
+      <PageContainer>
+        <div className="grid overflow-hidden rounded-3xl border bg-secondary/45 lg:grid-cols-[1.1fr_1fr]">
+          <div className="relative overflow-hidden bg-primary p-7 text-primary-foreground sm:p-9 lg:p-10">
+            <GraduationCap
+              className="absolute -bottom-5 -left-5 size-44 rotate-[-15deg] opacity-[0.07]"
+              strokeWidth={1}
+              aria-hidden="true"
+            />
+            <p className="mb-3 text-xs text-primary-foreground/80">شروع یک مسیر تازه</p>
+            <h2 id="support-title" className="text-2xl leading-10 font-bold">
+              به جمع ما خوش آمدید
+            </h2>
+            <p className="mt-3 max-w-sm text-sm leading-8 text-primary-foreground/85">
+              هر آنچه برای آغاز مسیر دانشگاهی نیاز دارید؛ از آشنایی با گروه‌های آموزشی تا راهنمای ثبت‌نام.
+            </p>
+            <div className="relative mt-6 flex flex-wrap gap-3">
+              <Button
+                nativeButton={false}
+                role="link"
+                variant="highlight"
+                className="min-h-12 gap-3 rounded-xl px-5"
+                render={<a href={destinations.newStudents} />}
+              >
+                راهنمای نودانشجویان <ArrowLeft aria-hidden="true" />
+              </Button>
+              <a
+                href={destinations.departments}
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-current/30 px-4 text-sm font-medium transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-highlight"
+              >
+                گروه‌های آموزشی <ArrowUpLeft className="size-4" aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+          <div className="flex flex-col justify-center divide-y divide-border px-7 sm:px-9 lg:px-10">
+            <a
+              href={destinations.contact}
+              className="group -mx-3 flex items-start gap-4 rounded-xl px-3 py-7 transition-[background-color,box-shadow] duration-200 hover:bg-card/80 hover:shadow-sm focus-visible:bg-card/80 focus-visible:shadow-sm focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-card text-primary transition-colors duration-200 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:border-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
+                <MessagesSquare className="size-5" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+              <span className="flex-1">
+                <span className="block text-base leading-7 font-semibold transition-colors duration-200 group-hover:text-primary group-focus-visible:text-primary">
+                  صدای شما برای ما مهم است
+                </span>
+                <span className="mt-1 block text-xs leading-7 text-muted-foreground">
+                  راه‌های ارتباط با دانشگاه و ارسال دیدگاه‌ها و پیشنهادات
+                </span>
+              </span>
+              <ArrowUpLeft
+                className="mt-2 size-4 shrink-0 text-primary transition-transform duration-200 motion-safe:group-hover:-translate-x-1 motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-x-1 motion-safe:group-focus-visible:-translate-y-1"
+                aria-hidden="true"
+              />
+            </a>
+            <a
+              href="http://counseling.hut.ac.ir"
+              className="group -mx-3 flex items-start gap-4 rounded-xl px-3 py-7 transition-[background-color,box-shadow] duration-200 hover:bg-card/80 hover:shadow-sm focus-visible:bg-card/80 focus-visible:shadow-sm focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-card text-primary transition-colors duration-200 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:border-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
+                <Phone className="size-5" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+              <span className="flex-1">
+                <span className="block text-base leading-7 font-semibold transition-colors duration-200 group-hover:text-primary group-focus-visible:text-primary">
+                  همراه شما در مسیر دانشگاه
+                </span>
+                <span className="mt-1 block text-xs leading-7 text-muted-foreground">
+                  دریافت راهنمایی از مرکز مشاوره و سبک زندگی دانشگاه
+                </span>
+              </span>
+              <ArrowUpLeft
+                className="mt-2 size-4 shrink-0 text-primary transition-transform duration-200 motion-safe:group-hover:-translate-x-1 motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-x-1 motion-safe:group-focus-visible:-translate-y-1"
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+        </div>
+      </PageContainer>
+    </section>
+  );
+}
+
+/*===== Footer Destinations =====*/
+const quickLinks = [
+  { label: "معرفی دانشگاه", href: destinations.about },
+  { label: "اعضای هیئت علمی", href: destinations.faculty },
+  { label: "گروه‌های آموزشی", href: destinations.departments },
+  { label: "فرم‌ها و آیین‌نامه‌ها", href: destinations.forms },
+  { label: "دفترچه تلفن", href: destinations.phonebook },
+];
+
+const socialLinks = [
+  { label: "ایتا", href: destinations.eitaa },
+  { label: "آپارات", href: destinations.aparat },
+  { label: "لینکدین", href: destinations.linkedin },
+];
+
+/*===== Institutional Footer =====*/
+export function Footer() {
+  return (
+    <footer className="bg-university-deep pt-12 text-white sm:pt-16">
+      <PageContainer>
+        <div className="grid gap-x-8 gap-y-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.8fr_0.8fr_1.1fr]">
+          <div>
+            <Brand inverse />
+            <p className="mt-5 max-w-xs text-xs leading-8 text-white/70">
+              پایگاه اطلاع‌رسانی دانشگاه صنعتی همدان؛ اخبار، آموزش، پژوهش و خدمات جامعه دانشگاهی.
+            </p>
+            <nav aria-label="شبکه‌های اجتماعی دانشگاه" className="mt-5 flex flex-wrap gap-2">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="flex min-h-11 items-center gap-1 rounded-lg border border-white/15 px-3 text-[11px] text-white/80 transition-colors hover:border-white/40 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-highlight"
+                >
+                  {link.label}
+                  <ArrowUpLeft className="size-3" aria-hidden="true" />
+                </a>
+              ))}
+            </nav>
+          </div>
+          <div>
+            <h2 className="mb-4 text-sm font-semibold">پیوندهای دانشگاه</h2>
+            <nav aria-label="پیوندهای دانشگاه در پایین صفحه" className="grid">
+              {quickLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-highlight"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+          <div>
+            <h2 className="mb-4 text-sm font-semibold">سامانه‌ها و خدمات</h2>
+            <nav aria-label="خدمات دانشگاه در پایین صفحه" className="grid">
+              {services.slice(0, 5).map((service) => (
+                <a
+                  key={service.label}
+                  href={service.href}
+                  className="flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-highlight"
+                >
+                  {service.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+          <div>
+            <h2 className="mb-5 text-sm font-semibold">ارتباط با دانشگاه</h2>
+            <address className="grid gap-4 text-xs leading-7 text-white/70 not-italic">
+              <p className="flex gap-2.5">
+                <MapPin className="mt-1 size-4 shrink-0 text-highlight" aria-hidden="true" />
+                همدان، پل پژوهش، بلوار شهید فهمیده، خیابان مردم
+              </p>
+              <a
+                href={destinations.phone}
+                className="flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-highlight"
+              >
+                <Phone className="size-4 text-highlight" aria-hidden="true" />
+                <span dir="ltr">۰۸۱–۳۸۴۱۱۰۰۰</span>
+              </a>
+              <a
+                href={destinations.email}
+                className="flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-highlight"
+              >
+                <Mail className="size-4 text-highlight" aria-hidden="true" />
+                <span dir="ltr">info@hut.ac.ir</span>
+              </a>
+            </address>
+            <TextLink href={destinations.contact} className="mt-3 text-xs text-highlight hover:text-white">
+              ارتباط با ما
+            </TextLink>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 py-6 text-[10px] leading-6 text-white/65">
+          <p>کلیه حقوق این وب‌سایت متعلق به دانشگاه صنعتی همدان است.</p>
+          <span lang="en" dir="ltr" className="tracking-[0.14em]">
+            HAMEDAN · IRAN
+          </span>
+        </div>
+      </PageContainer>
+    </footer>
+  );
+}
