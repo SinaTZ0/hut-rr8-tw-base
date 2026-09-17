@@ -1,0 +1,5 @@
+/* Docs chrome has its own colors; story canvases should follow the component theme. */
+.sbdocs-preview .docs-story {
+  background-color: var(--background);
+  color: var(--foreground);
+}

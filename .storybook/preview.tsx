@@ -1,11 +1,19 @@
 // Load Vite's ambient declarations so TypeScript recognizes CSS and asset imports.
 /// <reference types="vite/client" />
 
-import type { Preview } from "@storybook/react-vite";
+import { withThemeByClassName } from "@storybook/addon-themes";
+import type { Preview, ReactRenderer } from "@storybook/react-vite";
 
 import "../app/app.css";
+import "./preview.css";
 
 const preview: Preview = {
+  decorators: [
+    withThemeByClassName<ReactRenderer>({
+      themes: { light: "", dark: "dark" },
+      defaultTheme: "light",
+    }),
+  ],
   parameters: {
     controls: {
       matchers: {

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Mail, Plus } from "lucide-react";
 import type { ComponentProps } from "react";
-import { fn } from "storybook/test";
+import { expect, fn } from "storybook/test";
 
 import { Button, twButtonIconSizeClasses, twButtonSizeClasses, twButtonVariantClasses } from "./button";
 
@@ -72,7 +72,22 @@ function StoryIcon({ position }: { position: (typeof iconPositionOptions)[number
 
 /*===== Controls =====*/
 
-export const Controls = {} satisfies Story;
+export const Controls = {
+  render: (args) => (
+    <div className="flex min-h-40 w-full items-center justify-center bg-background p-6 text-foreground">
+      <Button {...args} />
+    </div>
+  ),
+} satisfies Story;
+
+// Leave these unset so this story reflects the component's own defaults.
+export const Default = {
+  args: {
+    variant: undefined,
+    size: undefined,
+    children: "ثبت درخواست",
+  },
+} satisfies Story;
 
 /*===== Variants =====*/
 
@@ -93,6 +108,58 @@ export const Variants = {
   ),
 } satisfies Story;
 
+/*===== Themes And States =====*/
+
+export const ThemesAndStates = {
+  argTypes: {
+    variant: { control: false },
+    children: { control: false },
+    disabled: { control: false },
+  },
+  render: (args) => (
+    <div className="grid gap-3 rounded-2xl bg-background p-6 text-foreground">
+      {variantOptions.map((variant) => (
+        <div key={variant} className={sectionClassName}>
+          <Button {...args} variant={variant} disabled={false}>
+            {variant}
+          </Button>
+          <Button {...args} variant={variant} disabled>
+            غیرفعال
+          </Button>
+        </div>
+      ))}
+    </div>
+  ),
+  play: async ({ canvas, args, userEvent }) => {
+    const buttons = canvas.getAllByRole("button");
+    let activationCount = 0;
+
+    for (let index = 0; index < buttons.length; index += 2) {
+      const enabledButton = buttons[index];
+      const disabledButton = buttons[index + 1];
+
+      await expect(enabledButton).toBeEnabled();
+      await expect(disabledButton).toBeDisabled();
+
+      enabledButton.focus();
+      await expect(enabledButton).toHaveFocus();
+      await userEvent.keyboard("{Enter}");
+      await userEvent.keyboard(" ");
+      activationCount += 2;
+      await expect(args.onClick).toHaveBeenCalledTimes(activationCount);
+
+      // A native click bypasses the CSS pointer guard and verifies disabled behavior.
+      disabledButton.click();
+      await expect(args.onClick).toHaveBeenCalledTimes(activationCount);
+
+      if (index + 2 < buttons.length) {
+        await userEvent.tab();
+        await expect(buttons[index + 2]).toHaveFocus();
+      }
+    }
+  },
+} satisfies Story;
+
 /*===== Button Sizes =====*/
 
 export const ButtonSizes = {
@@ -103,9 +170,14 @@ export const ButtonSizes = {
   render: (args) => (
     <div className={sectionClassName}>
       {buttonSizeOptions.map((size) => (
-        <Button key={size} {...args} size={size}>
-          دکمه
-        </Button>
+        <div key={size} className="flex flex-col items-center gap-2">
+          <Button {...args} size={size}>
+            دکمه
+          </Button>
+          <span dir="ltr" lang="en" className="text-xs text-muted-foreground">
+            {size}
+          </span>
+        </div>
       ))}
     </div>
   ),
@@ -169,13 +241,19 @@ export const IconSizes = {
   argTypes: {
     size: { control: false },
     children: { control: false },
+    "aria-label": { control: false },
   },
   render: (args) => (
     <div className={sectionClassName}>
       {iconSizeOptions.map((size) => (
-        <Button key={size} {...args} aria-label={`افزودن (${size})`} size={size}>
-          <Plus aria-hidden="true" />
-        </Button>
+        <div key={size} className="flex flex-col items-center gap-2">
+          <Button {...args} aria-label={`افزودن (${size})`} size={size}>
+            <Plus aria-hidden="true" />
+          </Button>
+          <span dir="ltr" lang="en" className="text-xs text-muted-foreground">
+            {size}
+          </span>
+        </div>
       ))}
     </div>
   ),
