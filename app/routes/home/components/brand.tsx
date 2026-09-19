@@ -7,7 +7,7 @@ import logo from "~/assets/branding-navbar-logo.png";
 export function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
     <Link
-      to="/new-homepage"
+      to="/"
       aria-label="صفحه اصلی دانشگاه صنعتی همدان"
       className="focus-visible:outline-highlight flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
     >

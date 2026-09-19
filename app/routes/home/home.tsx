@@ -1,56 +1,52 @@
-import { CalendarSection } from "./components/CalendarSection";
-import { CallToActionSection } from "./components/CallToActionSection";
-import { CampusStorySection } from "./components/CampusStorySection";
-import { AchievementsSection, EventsSection } from "./components/CardSections";
-import { styles } from "./components/common";
-import { ContactServicesSection } from "./components/ContactServicesSection";
-import { FloatingLinks } from "./components/FloatingLinks";
-import { FooterSection } from "./components/FooterSection";
-import { Header } from "./components/Header";
-import { HeroSection } from "./components/HeroSection";
-import { NewsSection } from "./components/NewsSection";
-import { QuickAccessSection } from "./components/QuickAccessSection";
+import type { Route } from "./+types/home";
 
-export function meta() {
+import { CalendarSection } from "./components/calendar-section";
+import { Header } from "./components/header";
+import { Hero } from "./components/hero";
+import { NewsSection } from "./components/news-section";
+import { ServiceShortcuts } from "./components/service-shortcuts";
+import { AchievementsSection, CoursesSection } from "./components/stories-sections";
+import { Footer, StudentSupport } from "./components/support-and-footer";
+import { UniversityProfile } from "./components/university-profile";
+
+/*===== Page Metadata =====*/
+export function meta(_args: Route.MetaArgs) {
   return [
-    { title: "دانشگاه صنعتی همدان" },
+    { title: "دانشگاه صنعتی همدان | دانش، فناوری، آینده" },
     {
       name: "description",
-      content: "وب‌سایت دانشگاه صنعتی همدان؛ اخبار، اطلاعیه‌ها، آموزش، پژوهش و خدمات دانشجویی",
+      content:
+        "پایگاه اطلاع‌رسانی دانشگاه صنعتی همدان؛ اخبار و اطلاعیه‌ها، تقویم آموزشی، پژوهش و فناوری، خدمات دانشجویی و سامانه‌های دانشگاه.",
     },
-    { name: "theme-color", content: "#073b4c" },
+    { name: "theme-color", content: "#103d40" },
   ];
 }
 
-export function headers() {
-  return {
-    "Cache-Control": "no-store",
-  };
-}
-
+/*===== Homepage =====*/
 export default function Home() {
   return (
-    <div className={styles["hut-modern"]} id="hutModernPage">
-      <a className={styles["hut-skip-link"]} href="#hut-main">
+    <div className="bg-background text-foreground selection:bg-highlight/40 min-h-screen">
+      <a
+        href="#homepage-main"
+        className="bg-highlight text-highlight-foreground fixed top-3 right-5 z-[100] -translate-y-24 rounded-xl px-5 py-3 text-sm font-semibold transition-transform focus:translate-y-0"
+      >
         پرش به محتوای اصلی
       </a>
-
       <Header />
-
-      <main id="hut-main">
-        <HeroSection />
-        <QuickAccessSection />
+      <main id="homepage-main" tabIndex={-1} className="scroll-mt-24 outline-none">
+        {/*===== Identity and Everyday Services =====*/}
+        <Hero />
+        <ServiceShortcuts />
+        {/*===== University Information =====*/}
         <NewsSection />
         <CalendarSection />
-        <ContactServicesSection />
-        <CampusStorySection />
+        <UniversityProfile />
+        {/*===== Research, Learning, and Support =====*/}
         <AchievementsSection />
-        <EventsSection />
-        <CallToActionSection />
+        <CoursesSection />
+        <StudentSupport />
       </main>
-
-      <FloatingLinks />
-      <FooterSection />
+      <Footer />
     </div>
   );
 }

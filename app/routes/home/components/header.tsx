@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpLeft, Menu, Moon, Sun, X } from "lucide-react";
+import { ArrowUpLeft, Menu, Monitor, Moon, Sun, X } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/primitive/accordion";
 import { Button } from "~/components/primitive/button";
@@ -20,16 +20,45 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/primitive/sheet";
+import { getNextTheme, type ThemePreference } from "~/theme/theme";
+import { useTheme } from "~/theme/theme-provider";
 
 import { destinations, navigationGroups } from "../content";
-import { useHomepageTheme } from "../hooks/use-homepage-theme";
 import { Brand } from "./brand";
 import { HomepageSearch } from "./homepage-search";
 import { PageContainer } from "./layout";
 
+/*===== Theme Control =====*/
+
+const themeLabels: Record<ThemePreference, string> = {
+  system: "سیستم",
+  light: "روشن",
+  dark: "تاریک",
+};
+
+function ThemeIcon({ theme, className }: { theme: ThemePreference; className?: string }) {
+  if (theme === "system") return <Monitor className={className} aria-hidden="true" />;
+  if (theme === "light") return <Sun className={className} aria-hidden="true" />;
+  return <Moon className={className} aria-hidden="true" />;
+}
+
+function getThemeControlLabel(theme: ThemePreference) {
+  const nextTheme = getNextTheme(theme);
+  return `پوسته فعلی: ${themeLabels[theme]}؛ تغییر به ${themeLabels[nextTheme]}`;
+}
+
 /*===== Mobile Navigation =====*/
-function MobileNavigation({ theme, toggleTheme }: { theme: "light" | "dark"; toggleTheme: () => void }) {
+function MobileNavigation({
+  theme,
+  cycleTheme,
+  isPending,
+}: {
+  theme: ThemePreference;
+  cycleTheme: () => void;
+  isPending: boolean;
+}) {
   const [open, setOpen] = useState(false);
+  const themeLabel = getThemeControlLabel(theme);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -58,7 +87,7 @@ function MobileNavigation({ theme, toggleTheme }: { theme: "light" | "dark"; tog
                         key={link.label}
                         href={link.href}
                         onClick={() => setOpen(false)}
-                        className="hover:bg-muted focus-visible:outline-ring flex min-h-11 items-center rounded-lg px-3 text-sm focus-visible:outline-2"
+                        className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
                       >
                         {link.label}
                       </a>
@@ -89,19 +118,20 @@ function MobileNavigation({ theme, toggleTheme }: { theme: "light" | "dark"; tog
             <Button
               variant="ghost"
               className="justify-between"
-              aria-label={theme === "dark" ? "فعال‌کردن حالت روشن" : "فعال‌کردن حالت تاریک"}
-              aria-pressed={theme === "dark"}
-              onClick={toggleTheme}
+              aria-label={themeLabel}
+              aria-busy={isPending}
+              disabled={isPending}
+              onClick={cycleTheme}
             >
-              {theme === "dark" ? "پوسته روشن" : "پوسته تاریک"}
-              {theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
+              پوسته: {themeLabels[theme]}
+              <ThemeIcon theme={theme} />
             </Button>
             <a
               href={destinations.english}
               lang="en"
               hrefLang="en"
               dir="ltr"
-              className="text-muted-foreground flex min-h-11 items-center justify-center text-sm"
+              className="flex min-h-11 items-center justify-center text-sm text-muted-foreground"
             >
               English website
             </a>
@@ -114,8 +144,8 @@ function MobileNavigation({ theme, toggleTheme }: { theme: "light" | "dark"; tog
 
 /*===== University Header =====*/
 export function Header() {
-  const { theme, toggleTheme } = useHomepageTheme();
-  const themeLabel = theme === "dark" ? "فعال‌کردن حالت روشن" : "فعال‌کردن حالت تاریک";
+  const { theme, cycleTheme, isPending } = useTheme();
+  const themeLabel = getThemeControlLabel(theme);
 
   return (
     <>
@@ -123,7 +153,7 @@ export function Header() {
       <div className="bg-university-deep text-white/80">
         <PageContainer className="flex min-h-9 items-center justify-between gap-4 text-[11px]">
           <span className="flex items-center gap-2">
-            <span className="bg-highlight size-1.5 rounded-full" aria-hidden="true" />
+            <span className="size-1.5 rounded-full bg-highlight" aria-hidden="true" />
             پایگاه رسمی دانشگاه صنعتی همدان
           </span>
           <nav aria-label="پیوندهای بالای صفحه" className="flex items-center gap-5">
@@ -138,7 +168,7 @@ export function Header() {
       </div>
 
       {/*===== Primary Navigation =====*/}
-      <header className="border-border/80 bg-background/95 sticky top-0 z-40 border-b backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-xl">
         <PageContainer className="flex min-h-20 items-center justify-between gap-2 px-4 sm:px-8 lg:gap-4 lg:px-10">
           <Brand />
           <NavigationMenu className="hidden flex-none xl:flex" aria-label="منوی اصلی">
@@ -147,13 +177,13 @@ export function Header() {
                 <NavigationMenuItem key={group.label}>
                   <NavigationMenuTrigger>{group.label}</NavigationMenuTrigger>
                   <NavigationMenuContent className="w-[310px]">
-                    <p className="text-muted-foreground mb-3 border-b px-2 pb-3 text-xs leading-6">
+                    <p className="mb-3 border-b px-2 pb-3 text-xs leading-6 text-muted-foreground">
                       {group.description}
                     </p>
                     {group.links.map((link) => (
                       <NavigationMenuLink key={link.label} href={link.href}>
                         {link.label}
-                        <ArrowUpLeft className="text-muted-foreground size-3.5" aria-hidden="true" />
+                        <ArrowUpLeft className="size-3.5 text-muted-foreground" aria-hidden="true" />
                       </NavigationMenuLink>
                     ))}
                   </NavigationMenuContent>
@@ -171,27 +201,24 @@ export function Header() {
               size="icon"
               className="hidden sm:inline-flex"
               aria-label={themeLabel}
-              aria-pressed={theme === "dark"}
-              onClick={toggleTheme}
+              aria-busy={isPending}
+              disabled={isPending}
+              onClick={cycleTheme}
             >
-              {theme === "dark" ? (
-                <Sun className="size-[19px]" aria-hidden="true" />
-              ) : (
-                <Moon className="size-[19px]" aria-hidden="true" />
-              )}
+              <ThemeIcon theme={theme} className="size-[19px]" />
             </Button>
             <a
               href={destinations.english}
               lang="en"
               hrefLang="en"
               dir="ltr"
-              className="hover:bg-muted focus-visible:outline-ring hidden size-11 items-center justify-center rounded-full text-xs font-semibold transition-colors focus-visible:outline-2 sm:flex"
+              className="hidden size-11 items-center justify-center rounded-full text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring sm:flex"
               aria-label="English website"
             >
               EN
             </a>
-            <span className="bg-border mx-1 hidden h-5 w-px xl:block" aria-hidden="true" />
-            <MobileNavigation theme={theme} toggleTheme={toggleTheme} />
+            <span className="mx-1 hidden h-5 w-px bg-border xl:block" aria-hidden="true" />
+            <MobileNavigation theme={theme} cycleTheme={cycleTheme} isPending={isPending} />
           </div>
         </PageContainer>
       </header>
