@@ -3,13 +3,26 @@ import { Mail, Plus } from "lucide-react";
 import type { ComponentProps } from "react";
 import { expect, fn } from "storybook/test";
 
-import { Button, twButtonIconSizeClasses, twButtonSizeClasses, twButtonVariantClasses } from "./button";
+import { Button } from "./button";
 
 /*===== Story Options =====*/
 
-const variantOptions = Object.keys(twButtonVariantClasses) as Array<keyof typeof twButtonVariantClasses>;
-const buttonSizeOptions = Object.keys(twButtonSizeClasses) as Array<keyof typeof twButtonSizeClasses>;
-const iconSizeOptions = Object.keys(twButtonIconSizeClasses) as Array<keyof typeof twButtonIconSizeClasses>;
+type ButtonProps = ComponentProps<typeof Button>;
+const variantOptions = [
+  "default",
+  "highlight",
+  "outline",
+  "secondary",
+  "ghost",
+  "destructive",
+  "link",
+] as const satisfies ReadonlyArray<NonNullable<ButtonProps["variant"]>>;
+const buttonSizeOptions = ["default", "xs", "sm", "lg"] as const satisfies ReadonlyArray<
+  NonNullable<ButtonProps["size"]>
+>;
+const iconSizeOptions = ["icon", "icon-xs", "icon-sm", "icon-lg"] as const satisfies ReadonlyArray<
+  NonNullable<ButtonProps["size"]>
+>;
 const iconPositionOptions = ["inline-start", "inline-end"] as const;
 const sectionClassName = "flex flex-wrap items-center gap-3";
 

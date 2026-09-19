@@ -2,10 +2,11 @@ import { useState } from "react";
 import { ArrowUpLeft, Play, VideoOff } from "lucide-react";
 
 import studentLife from "~/assets/campus-story-overview.jpg";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/primitive/button";
+import { Eyebrow } from "~/components/primitive/eyebrow";
 
 import { destinations, universityStats } from "../content";
-import { Eyebrow, PageContainer } from "./layout";
+import { PageContainer } from "./layout";
 
 /*===== On-demand Student Life Video =====*/
 function StudentLifeVideo() {
@@ -23,13 +24,7 @@ function StudentLifeVideo() {
               <br />
               ویدیوهای دانشگاه را در آپارات تماشا کنید.
             </p>
-            <Button
-              nativeButton={false}
-              role="link"
-              variant="highlight"
-              className="min-h-11 px-5"
-              render={<a href={destinations.aparat} />}
-            >
+            <Button nativeButton={false} role="link" variant="highlight" render={<a href={destinations.aparat} />}>
               تماشا در آپارات <ArrowUpLeft aria-hidden="true" />
             </Button>
             <button
@@ -118,7 +113,9 @@ export function UniversityProfile() {
       />
       <PageContainer className="grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-20">
         <div>
-          <Eyebrow className="text-highlight">جامعه‌ای برای یادگیری و ساختن</Eyebrow>
+          <Eyebrow variant="highlight" className="mb-3">
+            جامعه‌ای برای یادگیری و ساختن
+          </Eyebrow>
           <h2 id="profile-title" className="text-2xl leading-[1.7] font-bold sm:text-3xl">
             دانشگاه صنعتی همدان
             <br />

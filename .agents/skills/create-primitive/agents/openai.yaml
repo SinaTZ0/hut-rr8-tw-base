@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Primitive"
+  short_description: "Build readable university UI primitives"
+  default_prompt: "Use $create-primitive to create or extract the requested component using this repository's primitive conventions."

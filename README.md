@@ -80,7 +80,12 @@ Make sure to deploy the output of `npm run build`
 
 ## Styling
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+The university UI uses Tailwind CSS, Vazirmatn Variable, and styled Base UI primitives.
+
+- [Component conventions](docs/components.md): component ownership, readable style groups, and customization.
+- [Style and typography](docs/style-and-typography.md): the current palette, surfaces, Persian type hierarchy, and spacing.
+
+Run `npm run storybook` to preview components and their states.
 
 ---
 

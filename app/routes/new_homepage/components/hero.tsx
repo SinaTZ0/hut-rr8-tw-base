@@ -1,7 +1,8 @@
 import { ArrowLeft, ArrowUpLeft, CalendarDays, MapPin } from "lucide-react";
 
 import campusImage from "~/assets/hero-campus-overview.png";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/primitive/button";
+import { Eyebrow } from "~/components/primitive/eyebrow";
 
 import { destinations } from "../content";
 import { PageContainer } from "./layout";
@@ -32,10 +33,9 @@ export function Hero() {
       {/*------ University Identity ------*/}
       <PageContainer className="relative grid items-center gap-8 pt-10 pb-8 sm:pt-12 sm:pb-10 lg:grid-cols-[1fr_0.9fr] lg:py-6">
         <div className="max-w-xl">
-          <p className="mb-4 flex items-center gap-3 text-xs font-medium text-white/90 sm:text-sm">
-            <span className="h-px w-8 bg-highlight" aria-hidden="true" />
+          <Eyebrow variant="inverse" marker="line" className="mb-4 font-medium">
             دانش، فناوری، آینده
-          </p>
+          </Eyebrow>
           <h1
             id="homepage-title"
             className="text-[clamp(1.9rem,10.8vw,2.65rem)] leading-[1.4] font-extrabold tracking-tight sm:text-[3.4rem] lg:text-[3.5rem]"
@@ -55,7 +55,6 @@ export function Hero() {
               role="link"
               variant="highlight"
               size="lg"
-              className="min-h-12 gap-4 rounded-xl px-5 focus-visible:border-highlight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight motion-reduce:transition-none"
               render={<a href={destinations.about} />}
             >
               آشنایی با دانشگاه <ArrowLeft aria-hidden="true" />
@@ -63,9 +62,8 @@ export function Hero() {
             <Button
               nativeButton={false}
               role="link"
-              variant="ghost"
+              variant="inverse-outline"
               size="lg"
-              className="min-h-12 gap-3 rounded-xl border-white/40 px-4 text-white hover:bg-white/10 hover:text-white focus-visible:border-highlight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight focus-visible:ring-highlight/50 motion-reduce:transition-none"
               render={<a href={destinations.newStudents} />}
             >
               راهنمای نودانشجویان <ArrowUpLeft aria-hidden="true" />

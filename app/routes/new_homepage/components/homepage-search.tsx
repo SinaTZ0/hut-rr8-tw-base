@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, Search, X } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/primitive/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "~/components/primitive/dialog";
 
 import { searchGroups } from "../content";
 
@@ -40,14 +40,11 @@ export function HomepageSearch() {
         setOpen(nextOpen);
       }}
     >
-      <DialogTrigger
-        render={<Button variant="ghost" size="icon" className="size-11 rounded-full" aria-label="جستجو در دانشگاه" />}
-      >
+      <DialogTrigger render={<Button variant="ghost" size="icon" aria-label="جستجو در دانشگاه" />}>
         <Search className="size-[19px]" aria-hidden="true" />
       </DialogTrigger>
       <DialogContent
-        className="overflow-hidden rounded-2xl p-0 sm:max-w-xl"
-        showCloseButton={false}
+        className="sm:max-w-xl"
         finalFocus={() => {
           // Section targets let Base UI focus their first actionable child;
           // article targets are already links. Resolve without consuming the ref.
@@ -58,14 +55,12 @@ export function HomepageSearch() {
           return target ?? true;
         }}
       >
-        <DialogHeader className="flex-row items-center justify-between border-b px-5 py-4">
+        <DialogHeader>
           <div>
-            <DialogTitle className="leading-7">جستجو در دانشگاه</DialogTitle>
-            <DialogDescription className="mt-1 text-xs">سامانه‌ها، بخش‌های دانشگاه و مطالب این صفحه</DialogDescription>
+            <DialogTitle>جستجو در دانشگاه</DialogTitle>
+            <DialogDescription className="mt-1">سامانه‌ها، بخش‌های دانشگاه و مطالب این صفحه</DialogDescription>
           </div>
-          <DialogClose
-            render={<Button variant="ghost" size="icon" className="size-11 rounded-full" aria-label="بستن جستجو" />}
-          >
+          <DialogClose render={<Button variant="ghost" size="icon" aria-label="بستن جستجو" />}>
             <X aria-hidden="true" />
           </DialogClose>
         </DialogHeader>
@@ -99,16 +94,16 @@ export function HomepageSearch() {
                       }
                     }}
                   >
-                    <Search className="size-3.5 text-muted-foreground" aria-hidden="true" />
+                    <Search className="text-muted-foreground size-3.5" aria-hidden="true" />
                     <span>{link.label}</span>
-                    <ArrowLeft className="ms-auto size-3.5 text-muted-foreground" aria-hidden="true" />
+                    <ArrowLeft className="text-muted-foreground ms-auto size-3.5" aria-hidden="true" />
                   </CommandItem>
                 ))}
               </CommandGroup>
             ))}
           </CommandList>
         </Command>
-        <p className="border-t bg-muted/60 px-5 py-3 text-xs leading-6 text-muted-foreground">
+        <p className="bg-muted/60 text-muted-foreground border-t px-5 py-3 text-xs leading-6">
           با کلیدهای جهت‌نما انتخاب کنید و با Enter وارد شوید.
         </p>
       </DialogContent>

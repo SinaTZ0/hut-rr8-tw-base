@@ -9,25 +9,25 @@ export function Brand({ inverse = false }: { inverse?: boolean }) {
     <Link
       to="/new-homepage"
       aria-label="صفحه اصلی دانشگاه صنعتی همدان"
-      className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight"
+      className="focus-visible:outline-highlight flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-4"
     >
       <span
         className={cn(
-          "flex size-11 items-center justify-center rounded-xl bg-university sm:size-12",
+          "bg-university flex size-11 items-center justify-center rounded-xl sm:size-12",
           inverse && "border border-white/15 bg-white/5",
         )}
       >
         <img src={logo} alt="" width={96} height={86} className="h-8 w-9 object-contain" />
       </span>
       <span>
-        <span className={cn("block text-sm leading-7 font-bold text-foreground sm:text-base", inverse && "text-white")}>
+        <span className={cn("text-foreground block text-sm leading-7 font-bold sm:text-base", inverse && "text-white")}>
           دانشگاه صنعتی همدان
         </span>
         <span
           lang="en"
           dir="ltr"
           className={cn(
-            "hidden text-[8px] leading-4 tracking-[0.07em] text-muted-foreground sm:block sm:text-[9px]",
+            "text-muted-foreground hidden text-[8px] leading-4 tracking-[0.07em] sm:block sm:text-[9px]",
             inverse && "text-white/70",
           )}
         >

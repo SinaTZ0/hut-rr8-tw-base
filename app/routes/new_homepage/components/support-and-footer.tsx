@@ -1,10 +1,12 @@
 import { ArrowLeft, ArrowUpLeft, GraduationCap, Mail, MapPin, MessagesSquare, Phone } from "lucide-react";
 
-import { Button } from "~/components/ui/button";
+import { Button } from "~/components/primitive/button";
+import { LinkTile } from "~/components/primitive/link-tile";
+import { TextLink } from "~/components/primitive/text-link";
 
 import { destinations, services } from "../content";
 import { Brand } from "./brand";
-import { PageContainer, TextLink } from "./layout";
+import { PageContainer } from "./layout";
 
 /*===== Student Guidance and University Contact =====*/
 export function StudentSupport() {
@@ -13,21 +15,21 @@ export function StudentSupport() {
       id="university-contact"
       tabIndex={-1}
       aria-labelledby="support-title"
-      className="scroll-mt-28 py-14 focus-visible:outline-2 focus-visible:outline-ring sm:py-20"
+      className="focus-visible:outline-ring scroll-mt-28 py-14 focus-visible:outline-2 sm:py-20"
     >
       <PageContainer>
-        <div className="grid overflow-hidden rounded-3xl border bg-secondary/45 lg:grid-cols-[1.1fr_1fr]">
-          <div className="relative overflow-hidden bg-primary p-7 text-primary-foreground sm:p-9 lg:p-10">
+        <div className="bg-secondary/45 grid overflow-hidden rounded-3xl border lg:grid-cols-[1.1fr_1fr]">
+          <div className="bg-primary text-primary-foreground relative overflow-hidden p-7 sm:p-9 lg:p-10">
             <GraduationCap
               className="absolute -bottom-5 -left-5 size-44 rotate-[-15deg] opacity-[0.07]"
               strokeWidth={1}
               aria-hidden="true"
             />
-            <p className="mb-3 text-xs text-primary-foreground/80">شروع یک مسیر تازه</p>
+            <p className="text-primary-foreground/80 mb-3 text-xs">شروع یک مسیر تازه</p>
             <h2 id="support-title" className="text-2xl leading-10 font-bold">
               به جمع ما خوش آمدید
             </h2>
-            <p className="mt-3 max-w-sm text-sm leading-8 text-primary-foreground/85">
+            <p className="text-primary-foreground/85 mt-3 max-w-sm text-sm leading-8">
               هر آنچه برای آغاز مسیر دانشگاهی نیاز دارید؛ از آشنایی با گروه‌های آموزشی تا راهنمای ثبت‌نام.
             </p>
             <div className="relative mt-6 flex flex-wrap gap-3">
@@ -35,60 +37,39 @@ export function StudentSupport() {
                 nativeButton={false}
                 role="link"
                 variant="highlight"
-                className="min-h-12 gap-3 rounded-xl px-5"
+                size="lg"
                 render={<a href={destinations.newStudents} />}
               >
                 راهنمای نودانشجویان <ArrowLeft aria-hidden="true" />
               </Button>
-              <a
-                href={destinations.departments}
-                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-current/30 px-4 text-sm font-medium transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-highlight"
+              <Button
+                nativeButton={false}
+                role="link"
+                variant="inverse-outline"
+                size="lg"
+                render={<a href={destinations.departments} />}
               >
                 گروه‌های آموزشی <ArrowUpLeft className="size-4" aria-hidden="true" />
-              </a>
+              </Button>
             </div>
           </div>
-          <div className="flex flex-col justify-center divide-y divide-border px-7 sm:px-9 lg:px-10">
-            <a
+          <div className="divide-border flex flex-col justify-center divide-y px-7 sm:px-9 lg:px-10">
+            <LinkTile
               href={destinations.contact}
-              className="group -mx-3 flex items-start gap-4 rounded-xl px-3 py-7 transition-[background-color,box-shadow] duration-200 hover:bg-card/80 hover:shadow-sm focus-visible:bg-card/80 focus-visible:shadow-sm focus-visible:outline-2 focus-visible:outline-ring"
+              icon={<MessagesSquare strokeWidth={1.5} />}
+              description="راه‌های ارتباط با دانشگاه و ارسال دیدگاه‌ها و پیشنهادات"
+              className="-mx-3"
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-card text-primary transition-colors duration-200 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:border-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
-                <MessagesSquare className="size-5" strokeWidth={1.5} aria-hidden="true" />
-              </span>
-              <span className="flex-1">
-                <span className="block text-base leading-7 font-semibold transition-colors duration-200 group-hover:text-primary group-focus-visible:text-primary">
-                  صدای شما برای ما مهم است
-                </span>
-                <span className="mt-1 block text-xs leading-7 text-muted-foreground">
-                  راه‌های ارتباط با دانشگاه و ارسال دیدگاه‌ها و پیشنهادات
-                </span>
-              </span>
-              <ArrowUpLeft
-                className="mt-2 size-4 shrink-0 text-primary transition-transform duration-200 motion-safe:group-hover:-translate-x-1 motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-x-1 motion-safe:group-focus-visible:-translate-y-1"
-                aria-hidden="true"
-              />
-            </a>
-            <a
+              صدای شما برای ما مهم است
+            </LinkTile>
+            <LinkTile
               href="http://counseling.hut.ac.ir"
-              className="group -mx-3 flex items-start gap-4 rounded-xl px-3 py-7 transition-[background-color,box-shadow] duration-200 hover:bg-card/80 hover:shadow-sm focus-visible:bg-card/80 focus-visible:shadow-sm focus-visible:outline-2 focus-visible:outline-ring"
+              icon={<Phone strokeWidth={1.5} />}
+              description="دریافت راهنمایی از مرکز مشاوره و سبک زندگی دانشگاه"
+              className="-mx-3"
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl border bg-card text-primary transition-colors duration-200 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:border-primary group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
-                <Phone className="size-5" strokeWidth={1.5} aria-hidden="true" />
-              </span>
-              <span className="flex-1">
-                <span className="block text-base leading-7 font-semibold transition-colors duration-200 group-hover:text-primary group-focus-visible:text-primary">
-                  همراه شما در مسیر دانشگاه
-                </span>
-                <span className="mt-1 block text-xs leading-7 text-muted-foreground">
-                  دریافت راهنمایی از مرکز مشاوره و سبک زندگی دانشگاه
-                </span>
-              </span>
-              <ArrowUpLeft
-                className="mt-2 size-4 shrink-0 text-primary transition-transform duration-200 motion-safe:group-hover:-translate-x-1 motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-x-1 motion-safe:group-focus-visible:-translate-y-1"
-                aria-hidden="true"
-              />
-            </a>
+              همراه شما در مسیر دانشگاه
+            </LinkTile>
           </div>
         </div>
       </PageContainer>
@@ -127,7 +108,7 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="flex min-h-11 items-center gap-1 rounded-lg border border-white/15 px-3 text-[11px] text-white/80 transition-colors hover:border-white/40 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-highlight"
+                  className="focus-visible:outline-highlight flex min-h-11 items-center gap-1 rounded-lg border border-white/15 px-3 text-[11px] text-white/80 transition-colors hover:border-white/40 hover:bg-white/5 focus-visible:outline-2"
                 >
                   {link.label}
                   <ArrowUpLeft className="size-3" aria-hidden="true" />
@@ -142,7 +123,7 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-highlight"
+                  className="hover:text-highlight focus-visible:outline-highlight flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors focus-visible:outline-2"
                 >
                   {link.label}
                 </a>
@@ -156,7 +137,7 @@ export function Footer() {
                 <a
                   key={service.label}
                   href={service.href}
-                  className="flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors hover:text-highlight focus-visible:outline-2 focus-visible:outline-highlight"
+                  className="hover:text-highlight focus-visible:outline-highlight flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors focus-visible:outline-2"
                 >
                   {service.label}
                 </a>
@@ -167,25 +148,25 @@ export function Footer() {
             <h2 className="mb-5 text-sm font-semibold">ارتباط با دانشگاه</h2>
             <address className="grid gap-4 text-xs leading-7 text-white/70 not-italic">
               <p className="flex gap-2.5">
-                <MapPin className="mt-1 size-4 shrink-0 text-highlight" aria-hidden="true" />
+                <MapPin className="text-highlight mt-1 size-4 shrink-0" aria-hidden="true" />
                 همدان، پل پژوهش، بلوار شهید فهمیده، خیابان مردم
               </p>
               <a
                 href={destinations.phone}
-                className="flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-highlight"
+                className="focus-visible:outline-highlight flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2"
               >
-                <Phone className="size-4 text-highlight" aria-hidden="true" />
+                <Phone className="text-highlight size-4" aria-hidden="true" />
                 <span dir="ltr">۰۸۱–۳۸۴۱۱۰۰۰</span>
               </a>
               <a
                 href={destinations.email}
-                className="flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-highlight"
+                className="focus-visible:outline-highlight flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2"
               >
-                <Mail className="size-4 text-highlight" aria-hidden="true" />
+                <Mail className="text-highlight size-4" aria-hidden="true" />
                 <span dir="ltr">info@hut.ac.ir</span>
               </a>
             </address>
-            <TextLink href={destinations.contact} className="mt-3 text-xs text-highlight hover:text-white">
+            <TextLink href={destinations.contact} variant="highlight" size="sm" className="mt-3">
               ارتباط با ما
             </TextLink>
           </div>

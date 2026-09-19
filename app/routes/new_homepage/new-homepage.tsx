@@ -25,10 +25,10 @@ export function meta(_args: Route.MetaArgs) {
 /*===== Standalone Homepage =====*/
 export default function NewHomepage() {
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-highlight/40">
+    <div className="bg-background text-foreground selection:bg-highlight/40 min-h-screen">
       <a
         href="#homepage-main"
-        className="fixed top-3 right-5 z-[100] -translate-y-24 rounded-xl bg-highlight px-5 py-3 text-sm font-semibold text-highlight-foreground transition-transform focus:translate-y-0"
+        className="bg-highlight text-highlight-foreground fixed top-3 right-5 z-[100] -translate-y-24 rounded-xl px-5 py-3 text-sm font-semibold transition-transform focus:translate-y-0"
       >
         پرش به محتوای اصلی
       </a>
