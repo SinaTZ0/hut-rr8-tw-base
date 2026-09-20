@@ -66,24 +66,19 @@ export function HomepageSearch() {
         </DialogHeader>
         <Command
           label="جستجو در دانشگاه"
-          className="rounded-none! p-3 [&_[data-slot=input-group]]:h-12!"
+          variant="dialog"
           filter={(value, query) => (normalizeQuery(value).includes(normalizeQuery(query)) ? 1 : 0)}
         >
-          <CommandInput
-            autoFocus
-            placeholder="چه چیزی را جستجو می‌کنید؟"
-            aria-label="عبارت جستجو"
-            className="min-h-11 px-2"
-          />
+          <CommandInput size="lg" autoFocus placeholder="چه چیزی را جستجو می‌کنید؟" aria-label="عبارت جستجو" />
           <CommandList className="mt-3 max-h-[min(55vh,420px)]">
             <CommandEmpty>نتیجه‌ای پیدا نشد. عبارت دیگری را امتحان کنید.</CommandEmpty>
             {searchGroups.map((group) => (
               <CommandGroup key={group.label} heading={group.label}>
                 {group.links.map((link) => (
                   <CommandItem
+                    size="lg"
                     key={`${link.label}-${link.href}`}
                     value={`${link.label} ${link.href}`}
-                    className="min-h-11 gap-3 px-3 leading-6"
                     onSelect={() => {
                       if (link.href.startsWith("#")) {
                         destinationRef.current = link.href.slice(1);
@@ -94,16 +89,16 @@ export function HomepageSearch() {
                       }
                     }}
                   >
-                    <Search className="text-muted-foreground size-3.5" aria-hidden="true" />
+                    <Search className="size-3.5 text-muted-foreground" aria-hidden="true" />
                     <span>{link.label}</span>
-                    <ArrowLeft className="text-muted-foreground ms-auto size-3.5" aria-hidden="true" />
+                    <ArrowLeft className="ms-auto size-3.5 text-muted-foreground" aria-hidden="true" />
                   </CommandItem>
                 ))}
               </CommandGroup>
             ))}
           </CommandList>
         </Command>
-        <p className="bg-muted/60 text-muted-foreground border-t px-5 py-3 text-xs leading-6">
+        <p className="border-t bg-muted/60 px-5 py-3 text-xs leading-6 text-muted-foreground">
           با کلیدهای جهت‌نما انتخاب کنید و با Enter وارد شوید.
         </p>
       </DialogContent>

@@ -21,6 +21,7 @@ const meta = {
   ],
   parameters: {
     layout: "centered",
+    a11y: { test: "error" },
   },
   tags: ["autodocs"],
   argTypes: {
@@ -81,6 +82,15 @@ export const Sizes = {
           </span>
         </div>
       ))}
+    </div>
+  ),
+} satisfies Story;
+
+export const LongLabel = {
+  args: { children: "کارگاه تخصصی ارتباط دانشگاه و صنعت" },
+  render: (args) => (
+    <div className="max-w-32">
+      <Badge {...args} />
     </div>
   ),
 } satisfies Story;

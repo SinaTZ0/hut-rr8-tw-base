@@ -32,7 +32,7 @@ const meta = {
       </DirectionProvider>
     ),
   ],
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   tags: ["autodocs"],
   argTypes: {
     defaultOpen: { control: "boolean" },
@@ -89,6 +89,44 @@ function DialogPreview({ overlayProps, ...props }: DialogProps & Pick<DialogCont
 
 export const Default = {} satisfies Story;
 export const InitiallyOpen = { args: { defaultOpen: true } } satisfies Story;
+
+export const LongContent = {
+  render: () => (
+    <Dialog defaultOpen>
+      <DialogContent lang="fa" className="sm:max-w-xl">
+        <DialogHeader>
+          <div>
+            <DialogTitle>راهنمای استفاده از سامانه</DialogTitle>
+            <DialogDescription className="mt-1">اطلاعات کامل و قابل پیمایش درباره خدمات دانشگاه</DialogDescription>
+          </div>
+          <DialogClose render={<Button variant="ghost" size="icon" aria-label="بستن راهنما" />}>
+            <X aria-hidden="true" />
+          </DialogClose>
+        </DialogHeader>
+        <div className="grid gap-4 px-5 pb-5 leading-7">
+          <p>
+            این متن طولانی برای بررسی رفتار پنجره در اندازه‌های کوچک، بزرگ‌نمایی مرورگر و فاصله‌گذاری متن نوشته شده است.
+          </p>
+          <p>
+            کاربران باید بتوانند بدون پیمایش افقی به همه اطلاعات دسترسی داشته باشند و هنگام استفاده از صفحه‌کلید، مسیر
+            تمرکز را به‌سادگی دنبال کنند.
+          </p>
+          <p>
+            راهنمای خدمات آموزشی، پژوهشی و رفاهی دانشگاه در این بخش ارائه می‌شود تا محتوای پنجره در ارتفاع‌های مختلف نیز
+            قابل مشاهده و پیمایش باقی بماند.
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = body.getByRole("dialog", { name: "راهنمای استفاده از سامانه" });
+    await expect(dialog).toHaveAttribute("dir", "rtl");
+    await expect(getComputedStyle(dialog).overflowY).toBe("auto");
+    await expect(body.getByText(/این متن طولانی برای بررسی رفتار پنجره/)).toBeInTheDocument();
+  },
+} satisfies Story;
 
 /*===== Backdrop Customization =====*/
 

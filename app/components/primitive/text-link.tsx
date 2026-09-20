@@ -7,11 +7,12 @@ import { composeStyles, defineStyles } from "./styles";
 /*===== Shared Styles =====*/
 
 const twSharedStyles = defineStyles({
-  layout: "group/text-link inline-flex shrink-0 items-center",
-  geometry: "min-h-11 gap-2 rounded-md",
+  layout: "group/text-link inline-flex min-w-0 items-center",
+  geometry: "gap-2 rounded-md px-1",
   typography: "font-semibold",
-  interaction: "transition-colors",
-  focus: "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-solid",
+  interaction: "transition-[background-color,color,border-color]",
+  focus:
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid",
   motion: "motion-reduce:transition-none",
 });
 
@@ -28,7 +29,7 @@ const twVariant = defineStyles({
   default: {
     appearance: "text-primary",
     hover: "hover:text-foreground",
-    focus: "focus-visible:outline-ring",
+    focus: "focus-visible:outline-primary",
   },
   highlight: {
     appearance: "text-highlight",
@@ -41,9 +42,11 @@ const twVariant = defineStyles({
 
 const twSize = defineStyles({
   default: {
+    geometry: "min-h-11",
     typography: "text-sm",
   },
   sm: {
+    geometry: "min-h-10",
     typography: "text-xs",
   },
 });
@@ -66,6 +69,7 @@ export type TextLinkProps = ComponentProps<"a"> &
 /**
  * A native link that forwards anchor attributes and refs.
  * `external` selects the diagonal arrow only; target and rel remain caller-owned.
+ * The highlight variant is intended for the university's dark surface so its gold text remains AA-contrast.
  */
 function TextLink({ className, children, external = false, variant, size, ...props }: TextLinkProps) {
   const Icon = external ? ArrowUpLeft : ArrowLeft;

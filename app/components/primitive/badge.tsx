@@ -6,9 +6,9 @@ import { composeStyles, defineStyles } from "./styles";
 /*===== Shared Styles =====*/
 
 const twSharedStyles = defineStyles({
-  layout: "inline-flex w-fit shrink-0 items-center justify-center",
+  layout: "inline-flex w-fit max-w-full items-center justify-center",
   geometry: "rounded-4xl",
-  typography: "font-medium whitespace-nowrap",
+  typography: "text-center font-medium break-words",
 });
 
 /*===== Appearance =====*/

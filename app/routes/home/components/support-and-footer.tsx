@@ -15,21 +15,21 @@ export function StudentSupport() {
       id="university-contact"
       tabIndex={-1}
       aria-labelledby="support-title"
-      className="focus-visible:outline-ring scroll-mt-28 py-14 focus-visible:outline-2 sm:py-20"
+      className="scroll-mt-28 py-14 focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-solid sm:py-20"
     >
       <PageContainer>
-        <div className="bg-secondary/45 grid overflow-hidden rounded-3xl border lg:grid-cols-[1.1fr_1fr]">
-          <div className="bg-primary text-primary-foreground relative overflow-hidden p-7 sm:p-9 lg:p-10">
+        <div className="grid overflow-hidden rounded-3xl border bg-secondary/45 lg:grid-cols-[1.1fr_1fr]">
+          <div className="relative overflow-hidden bg-primary p-7 text-primary-foreground sm:p-9 lg:p-10">
             <GraduationCap
               className="absolute -bottom-5 -left-5 size-44 rotate-[-15deg] opacity-[0.07]"
               strokeWidth={1}
               aria-hidden="true"
             />
-            <p className="text-primary-foreground/80 mb-3 text-xs">شروع یک مسیر تازه</p>
+            <p className="mb-3 text-xs text-primary-foreground/80">شروع یک مسیر تازه</p>
             <h2 id="support-title" className="text-2xl leading-10 font-bold">
               به جمع ما خوش آمدید
             </h2>
-            <p className="text-primary-foreground/85 mt-3 max-w-sm text-sm leading-8">
+            <p className="mt-3 max-w-sm text-sm leading-8 text-primary-foreground/85">
               هر آنچه برای آغاز مسیر دانشگاهی نیاز دارید؛ از آشنایی با گروه‌های آموزشی تا راهنمای ثبت‌نام.
             </p>
             <div className="relative mt-6 flex flex-wrap gap-3">
@@ -53,7 +53,7 @@ export function StudentSupport() {
               </Button>
             </div>
           </div>
-          <div className="divide-border flex flex-col justify-center divide-y px-7 sm:px-9 lg:px-10">
+          <div className="flex flex-col justify-center divide-y divide-border px-7 sm:px-9 lg:px-10">
             <LinkTile
               href={destinations.contact}
               icon={<MessagesSquare strokeWidth={1.5} />}
@@ -108,7 +108,7 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="focus-visible:outline-highlight flex min-h-11 items-center gap-1 rounded-lg border border-white/15 px-3 text-[11px] text-white/80 transition-colors hover:border-white/40 hover:bg-white/5 focus-visible:outline-2"
+                  className="flex min-h-11 items-center gap-1 rounded-lg border border-white/15 px-3 text-[11px] text-white/80 transition-[background-color,border-color,color] hover:border-white/40 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
                 >
                   {link.label}
                   <ArrowUpLeft className="size-3" aria-hidden="true" />
@@ -123,7 +123,7 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="hover:text-highlight focus-visible:outline-highlight flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors focus-visible:outline-2"
+                  className="flex min-h-10 items-center rounded-md text-xs text-white/70 transition-[background-color,color] hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
                 >
                   {link.label}
                 </a>
@@ -137,7 +137,7 @@ export function Footer() {
                 <a
                   key={service.label}
                   href={service.href}
-                  className="hover:text-highlight focus-visible:outline-highlight flex min-h-10 items-center rounded-md text-xs text-white/70 transition-colors focus-visible:outline-2"
+                  className="flex min-h-10 items-center rounded-md text-xs text-white/70 transition-[background-color,color] hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
                 >
                   {service.label}
                 </a>
@@ -148,21 +148,21 @@ export function Footer() {
             <h2 className="mb-5 text-sm font-semibold">ارتباط با دانشگاه</h2>
             <address className="grid gap-4 text-xs leading-7 text-white/70 not-italic">
               <p className="flex gap-2.5">
-                <MapPin className="text-highlight mt-1 size-4 shrink-0" aria-hidden="true" />
+                <MapPin className="mt-1 size-4 shrink-0 text-highlight" aria-hidden="true" />
                 همدان، پل پژوهش، بلوار شهید فهمیده، خیابان مردم
               </p>
               <a
                 href={destinations.phone}
-                className="focus-visible:outline-highlight flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2"
+                className="flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
               >
-                <Phone className="text-highlight size-4" aria-hidden="true" />
+                <Phone className="size-4 text-highlight" aria-hidden="true" />
                 <span dir="ltr">۰۸۱–۳۸۴۱۱۰۰۰</span>
               </a>
               <a
                 href={destinations.email}
-                className="focus-visible:outline-highlight flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2"
+                className="flex min-h-10 items-center gap-2.5 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
               >
-                <Mail className="text-highlight size-4" aria-hidden="true" />
+                <Mail className="size-4 text-highlight" aria-hidden="true" />
                 <span dir="ltr">info@hut.ac.ir</span>
               </a>
             </address>

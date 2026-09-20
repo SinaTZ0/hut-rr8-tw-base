@@ -16,7 +16,7 @@ const meta = {
       </div>
     ),
   ],
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   tags: ["autodocs"],
   argTypes: {
     multiple: { control: "boolean" },

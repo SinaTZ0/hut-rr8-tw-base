@@ -24,6 +24,7 @@ const meta = {
   ],
   parameters: {
     layout: "centered",
+    a11y: { test: "error" },
   },
   tags: ["autodocs"],
   argTypes: {
@@ -129,6 +130,44 @@ export const WithIcon = {
       {children}
     </Button>
   ),
+} satisfies Story;
+
+export const IconOnlyAccessibleName = {
+  args: { size: "icon", children: "افزودن" },
+  render: (args) => <ButtonPreview {...args} />,
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("button", { name: "افزودن" })).toBeInTheDocument();
+  },
+} satisfies Story;
+
+export const LongLabel = {
+  args: { children: "ثبت درخواست همکاری پژوهشی با دانشگاه صنعتی همدان" },
+  render: (args) => (
+    <div className="max-w-48">
+      <ButtonPreview {...args} />
+    </div>
+  ),
+} satisfies Story;
+
+export const AccessibilityStates = {
+  render: () => (
+    <div className="flex flex-wrap gap-4">
+      <Button variant="default">اقدام اصلی</Button>
+      <Button variant="highlight">اقدام برجسته</Button>
+      <Button variant="outline">اقدام خطی</Button>
+    </div>
+  ),
+  play: async ({ canvas, userEvent }) => {
+    const primary = canvas.getByRole("button", { name: "اقدام اصلی" });
+    const highlight = canvas.getByRole("button", { name: "اقدام برجسته" });
+    const outline = canvas.getByRole("button", { name: "اقدام خطی" });
+
+    await expect(primary).toHaveClass("hover:bg-primary/90");
+    await expect(highlight).toHaveClass("focus-visible:outline-ring");
+    await expect(outline).toHaveClass("border-primary/70");
+    await userEvent.tab();
+    await expect(primary).toHaveFocus();
+  },
 } satisfies Story;
 
 /*===== Enabled and Disabled States =====*/

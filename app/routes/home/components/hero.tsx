@@ -33,7 +33,7 @@ export function Hero() {
       {/*------ University Identity ------*/}
       <PageContainer className="relative grid items-center gap-8 pt-10 pb-8 sm:pt-12 sm:pb-10 lg:grid-cols-[1fr_0.9fr] lg:py-6">
         <div className="max-w-xl">
-          <Eyebrow variant="inverse" marker="line" className="mb-4 font-medium">
+          <Eyebrow variant="inverse" marker="line" className="mb-4">
             دانش، فناوری، آینده
           </Eyebrow>
           <h1
@@ -94,7 +94,7 @@ export function Hero() {
         <a
           id="academic-announcement"
           href={destinations.calendarAnnouncement}
-          className="group flex min-h-14 scroll-mt-28 flex-wrap items-center gap-3 rounded-xl border-t border-white/25 py-3 transition-colors hover:bg-university-deep/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-highlight motion-reduce:transition-none sm:gap-5"
+          className="group flex min-h-14 scroll-mt-28 flex-wrap items-center gap-3 rounded-xl border-t border-white/25 py-3 transition-[background-color,color] hover:bg-university-deep/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid motion-reduce:transition-none sm:gap-5"
         >
           <CalendarDays className="size-5 shrink-0 text-highlight" strokeWidth={1.5} aria-hidden="true" />
           <span className="min-w-0 flex-1 sm:flex sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-1">

@@ -8,7 +8,7 @@ import { defineStyles } from "./styles";
 
 const twOverlayStyles = defineStyles({
   layout: "fixed inset-0 isolate z-50",
-  appearance: "bg-black/10 supports-backdrop-filter:backdrop-blur-xs",
+  appearance: "bg-black/20 supports-backdrop-filter:backdrop-blur-xs",
   interaction: "duration-100",
   state: "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
   motion: "motion-reduce:animate-none motion-reduce:transition-none",
@@ -16,11 +16,13 @@ const twOverlayStyles = defineStyles({
 
 const twContentStyles = defineStyles({
   layout:
-    "fixed start-1/2 top-1/2 z-50 grid -translate-x-1/2 -translate-y-1/2 gap-4 overflow-hidden rtl:translate-x-1/2",
+    "fixed start-1/2 top-1/2 z-50 grid max-h-[calc(100dvh-2rem)] w-full -translate-x-1/2 -translate-y-1/2 gap-4 overflow-y-auto overscroll-contain rtl:translate-x-1/2",
   geometry: "w-full max-w-[calc(100%-2rem)] rounded-2xl",
   typography: "text-sm",
-  appearance: "bg-popover text-popover-foreground ring-1 ring-foreground/10",
+  appearance: "border border-border bg-popover text-popover-foreground shadow-lg",
   interaction: "duration-100 outline-none",
+  focus:
+    "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring focus-visible:outline-solid",
   state:
     "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
   motion: "motion-reduce:animate-none motion-reduce:transition-none",
@@ -29,7 +31,7 @@ const twContentStyles = defineStyles({
 const twHeaderStyles = defineStyles({
   layout: "flex items-center justify-between gap-2",
   geometry: "px-5 py-4",
-  appearance: "border-b",
+  appearance: "border-b border-border",
 });
 
 const twTitleStyles = defineStyles({
@@ -42,7 +44,7 @@ const twDescriptionStyles = defineStyles({
 const twFooterStyles = defineStyles({
   layout: "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
   geometry: "px-5 py-4",
-  appearance: "border-t bg-muted/50",
+  appearance: "border-t border-border bg-muted/50",
 });
 
 /*===== Root, Trigger, and Close =====*/
@@ -92,7 +94,8 @@ function DialogOverlay({ className, ...props }: DialogOverlayProps) {
 
 /**
  * Styles Base UI's popup without replacing its focus, dismissal, or scroll handling.
- * Close buttons are composed explicitly; className controls popup width and overlayProps styles the backdrop.
+ * Include a DialogTitle or an explicit accessible name; close buttons are composed explicitly.
+ * className controls popup width and overlayProps styles the backdrop.
  */
 function DialogContent({ className, children, overlayProps, ...props }: DialogContentProps) {
   const direction = useDirection();

@@ -20,7 +20,7 @@ const meta = {
       </div>
     ),
   ],
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   tags: ["autodocs"],
   argTypes: {
     variant: { control: "select", options: variantOptions },
@@ -118,7 +118,7 @@ export const Markers = {
 /*===== Homepage Examples =====*/
 
 export const Hero = {
-  args: { children: "دانش، فناوری، آینده", variant: "inverse", marker: "line", className: "font-medium" },
+  args: { children: "دانش، فناوری، آینده", variant: "inverse", marker: "line" },
   render: (args) => <EyebrowPreview {...args} />,
 } satisfies Story;
 

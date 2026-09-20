@@ -7,8 +7,9 @@ import { composeStyles, defineStyles } from "./styles";
 /*===== Shared Styles =====*/
 
 const twSharedStyles = defineStyles({
-  layout: "group/link-tile flex",
-  focus: "focus-visible:outline-2 focus-visible:outline-ring focus-visible:outline-solid",
+  layout: "group/link-tile flex min-w-0",
+  focus:
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid",
   motion: "motion-reduce:transition-none",
 });
 
@@ -44,7 +45,7 @@ const twVariant = defineStyles({
       interaction: "transition-[background-color,box-shadow] duration-200",
     },
     icon: {
-      geometry: "size-11 rounded-xl border",
+      geometry: "size-11 rounded-xl border border-border",
       appearance: "bg-card",
       interaction: "transition-colors duration-200",
       hover:
@@ -53,11 +54,11 @@ const twVariant = defineStyles({
         "group-focus-visible/link-tile:border-primary group-focus-visible/link-tile:bg-primary group-focus-visible/link-tile:text-primary-foreground",
     },
     content: {
-      layout: "flex-1",
+      layout: "min-w-0 flex-1",
     },
     label: {
       layout: "block",
-      typography: "text-base leading-7",
+      typography: "text-base leading-7 break-words",
       interaction: "transition-colors duration-200",
       hover: "group-hover/link-tile:text-primary",
       focus: "group-focus-visible/link-tile:text-primary",
@@ -80,7 +81,7 @@ const twVariant = defineStyles({
       geometry: "min-h-28 px-3 py-4",
       typography: "text-center",
       hover: "hover:bg-muted",
-      focus: "focus-visible:z-10 focus-visible:bg-muted focus-visible:-outline-offset-4",
+      focus: "focus-visible:z-10 focus-visible:bg-muted focus-visible:outline-offset-2",
       interaction: "transition-colors",
     },
     icon: {},
@@ -154,7 +155,7 @@ export type LinkTileProps = ComponentProps<"a"> &
 /**
  * A native link with a label, optional decorative icon and description, and a directional arrow.
  * Forwards anchor attributes and refs; target and rel remain caller-owned.
- * Keep interactive elements out of children/description and grid borders and surrounding spacing in consumers.
+ * Keep interactive elements out of children/description and put page-grid borders on containing layout elements.
  */
 function LinkTile({ className, children, icon, description, variant, ...props }: LinkTileProps) {
   return (

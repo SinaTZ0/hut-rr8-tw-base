@@ -7,6 +7,7 @@ This is a React Router v8 application using Framework Mode. The application's us
 ## Working Directory
 
 - Run project commands from the repository root.
+- After making code changes, run `npm run lint` and fix all errors.
 - Put temporary scripts, diagnostics, experiments, and logs in `./.tmp-codex/`.
 - Create `./.tmp-codex/` as needed. It is gitignored and must never contain deliverable source files.
 
@@ -31,6 +32,28 @@ app/routes/
 ## Code Conventions
 
 Preserve established local conventions unless a rule below explicitly says otherwise.
+
+### Primitive-First UI
+
+- Before creating a page or component, or making a substantial visual change, read `docs/design-principles.md`, `docs/components.md`, and `docs/style-and-typography.md`.
+- Build user-facing controls and reusable visual surfaces with the university primitives in `app/components/primitive/`. Before creating a component or variant, search the primitive inventory, existing variants, and production usages for a suitable contract to reuse or extend.
+- Reuse an existing primitive whenever its semantic role matches. A missing convenience prop or an imperfect page fit is not sufficient reason to create a parallel primitive.
+- Use `app/components/ui/` only when no university primitive provides the required control. Do not mix the primitive and `ui` versions of the same control in one feature.
+- Use plain HTML elements for page layout, document semantics, and route-specific composition: for example, page sections, grid or flex wrappers, articles, headings, paragraphs, and lists. Do not use plain elements to recreate a button, link treatment, card, badge, dialog, navigation control, or another contract already owned by a primitive.
+- Consumers may use `className` to control surrounding layout and placement, such as grid or flex participation, width, margin, responsive visibility, positioning, and scroll offsets. Keep a primitive's colors, borders, radius, shadow, typography, internal padding and sizing, focus and hover treatment, and motion inside the primitive.
+- Do not cancel or replace a primitive's styles from a consumer, such as applying `border-0`, a new background, a different radius, or custom padding. If the requested design cannot be expressed by the current API, update the primitive instead of working around it in the route.
+- Add a named variant, size, or compound part only when it represents an intentional reusable design-system choice. Do not modify a primitive or add a variant solely to satisfy a one-off page treatment; keep route-specific layout and composition consumer-owned.
+- Before adding a variant, compare its visual and behavioral contract with every existing option. Reuse or extend the closest option instead of introducing near-duplicates such as `soft`, `muted`, and `subtle` for effectively the same treatment. Add a distinct variant only when its purpose and behavior are materially different.
+- You may change a primitive's default styles or API when the design-system contract should change for every consumer. Inspect existing consumers and colocated stories first, migrate affected call sites deliberately, and update or add stories for the changed behavior.
+- Create a new primitive when no existing primitive can own a distinct reusable UI contract. Keep route data, page orchestration, and editorial section composition in the route slice.
+- Import primitives directly from their owning files. Do not introduce barrel exports.
+
+#### When Styling Ownership Is Unclear
+
+- Preserve the existing primitive contract.
+- Avoid introducing a one-off visual override or variant.
+- Inspect similar production usages before deciding where the styling belongs.
+- Make the smallest change consistent with the existing design system.
 
 ### Imports
 

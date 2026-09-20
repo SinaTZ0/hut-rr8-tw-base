@@ -87,7 +87,7 @@ function MobileNavigation({
                         key={link.label}
                         href={link.href}
                         onClick={() => setOpen(false)}
-                        className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring"
+                        className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid"
                       >
                         {link.label}
                       </a>
@@ -131,7 +131,7 @@ function MobileNavigation({
               lang="en"
               hrefLang="en"
               dir="ltr"
-              className="flex min-h-11 items-center justify-center text-sm text-muted-foreground"
+              className="flex min-h-11 items-center justify-center rounded-md text-sm text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid"
             >
               English website
             </a>
@@ -148,7 +148,7 @@ export function Header() {
   const themeLabel = getThemeControlLabel(theme);
 
   return (
-    <>
+    <header>
       {/*===== Official Site Utility Bar =====*/}
       <div className="bg-university-deep text-white/80">
         <PageContainer className="flex min-h-9 items-center justify-between gap-4 text-[11px]">
@@ -157,10 +157,16 @@ export function Header() {
             پایگاه رسمی دانشگاه صنعتی همدان
           </span>
           <nav aria-label="پیوندهای بالای صفحه" className="flex items-center gap-5">
-            <a className="hidden min-h-9 items-center hover:text-white sm:flex" href={destinations.contact}>
+            <a
+              className="hidden min-h-9 items-center hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid sm:flex"
+              href={destinations.contact}
+            >
               ارتباط با ما
             </a>
-            <a className="flex min-h-9 items-center hover:text-white" href={destinations.login}>
+            <a
+              className="flex min-h-9 items-center hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
+              href={destinations.login}
+            >
               ورود به پرتال <ArrowUpLeft className="ms-1 size-3" aria-hidden="true" />
             </a>
           </nav>
@@ -168,7 +174,7 @@ export function Header() {
       </div>
 
       {/*===== Primary Navigation =====*/}
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-xl">
+      <div className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur-xl">
         <PageContainer className="flex min-h-20 items-center justify-between gap-2 px-4 sm:px-8 lg:gap-4 lg:px-10">
           <Brand />
           <NavigationMenu className="hidden flex-none xl:flex" aria-label="منوی اصلی">
@@ -212,7 +218,7 @@ export function Header() {
               lang="en"
               hrefLang="en"
               dir="ltr"
-              className="hidden size-11 items-center justify-center rounded-full text-xs font-semibold transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring sm:flex"
+              className="hidden size-11 items-center justify-center rounded-full text-xs font-semibold transition-[background-color,color] hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid sm:flex"
               aria-label="English website"
             >
               EN
@@ -221,7 +227,7 @@ export function Header() {
             <MobileNavigation theme={theme} cycleTheme={cycleTheme} isPending={isPending} />
           </div>
         </PageContainer>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }

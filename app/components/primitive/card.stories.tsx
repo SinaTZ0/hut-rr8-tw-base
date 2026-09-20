@@ -15,12 +15,18 @@ import {
   CardHeader,
   CardLink,
   CardTitle,
+  twContentVariant,
+  twRadius,
+  twVariant,
   twSize,
 } from "./card";
 
 /*===== Story Options =====*/
 
 const sizeOptions = Object.keys(twSize) as Array<keyof typeof twSize>;
+const cardVariantOptions = Object.keys(twVariant) as Array<keyof typeof twVariant>;
+const radiusOptions = Object.keys(twRadius) as Array<keyof typeof twRadius>;
+const contentVariantOptions = Object.keys(twContentVariant) as Array<keyof typeof twContentVariant>;
 
 /*===== Metadata =====*/
 
@@ -35,10 +41,11 @@ const meta = {
       </div>
     ),
   ],
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   tags: ["autodocs"],
   argTypes: {
     size: { control: "select", options: sizeOptions },
+    variant: { control: "select", options: contentVariantOptions },
     children: { control: "text" },
     className: { control: false },
     ref: { control: false },
@@ -97,6 +104,77 @@ export const CompoundParts = {
       </CardFooter>
     </Card>
   ),
+} satisfies Story;
+
+export const Variants = {
+  render: () => (
+    <div className="flex flex-wrap gap-6">
+      {cardVariantOptions.map((variant) => (
+        <div key={variant} className="grid gap-3">
+          <span dir="ltr" lang="en" className="text-xs text-muted-foreground">
+            {variant}
+          </span>
+          <Card className="w-[min(80vw,300px)]" variant={variant}>
+            <CardContent>تازه‌ترین اطلاعیه‌های دانشگاه را دنبال کنید.</CardContent>
+          </Card>
+        </div>
+      ))}
+    </div>
+  ),
+} satisfies Story;
+
+export const CompoundVariants = {
+  render: () => (
+    <div className="grid gap-6">
+      {radiusOptions.map((radius) => (
+        <Card key={radius} radius={radius} className="w-[min(80vw,360px)]">
+          <CardHeader>
+            <CardTitle>گزینه‌های ساختاری کارت</CardTitle>
+            <CardAction variant="highlight">۱۲</CardAction>
+          </CardHeader>
+          <CardContent variant="divided">
+            <p className="py-2">اطلاعیه آموزشی</p>
+            <p className="py-2">رویداد پژوهشی</p>
+          </CardContent>
+          <CardFooter variant="seamless">پایان کارت</CardFooter>
+        </Card>
+      ))}
+    </div>
+  ),
+} satisfies Story;
+
+export const SemanticAside = {
+  render: () => (
+    <Card render={<aside aria-labelledby="notices-preview-title" />} variant="muted" className="w-[min(80vw,360px)]">
+      <CardContent>
+        <CardTitle id="notices-preview-title">اطلاعیه‌ها</CardTitle>
+        <CardDescription className="mt-2">آخرین اطلاعیه‌های آموزشی و دانشگاهی</CardDescription>
+      </CardContent>
+    </Card>
+  ),
+  play: async ({ canvas }) => {
+    const card = canvas.getByRole("complementary", { name: "اطلاعیه‌ها" });
+    await expect(card.tagName).toBe("ASIDE");
+    await expect(card).toHaveAttribute("data-slot", "card");
+    await expect(card).toHaveAttribute("data-variant", "muted");
+    await expect(canvas.getByRole("heading", { level: 3, name: "اطلاعیه‌ها" })).toBeInTheDocument();
+    await expect(canvas.getByText("آخرین اطلاعیه‌های آموزشی و دانشگاهی").tagName).toBe("P");
+  },
+} satisfies Story;
+
+export const SemanticHeadingOverride = {
+  render: () => (
+    <Card className="w-[min(80vw,360px)]">
+      <CardContent>
+        <CardTitle render={<h2 />}>رویدادهای آینده دانشگاه</CardTitle>
+        <CardDescription>برنامه رویدادهای آموزشی و پژوهشی</CardDescription>
+      </CardContent>
+    </Card>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("heading", { level: 2, name: "رویدادهای آینده دانشگاه" })).toBeInTheDocument();
+    await expect(canvas.getByText("برنامه رویدادهای آموزشی و پژوهشی").tagName).toBe("P");
+  },
 } satisfies Story;
 
 export const News = {

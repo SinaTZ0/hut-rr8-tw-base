@@ -33,7 +33,7 @@ const meta = {
       </DirectionProvider>
     ),
   ],
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   tags: ["autodocs"],
   argTypes: {
     defaultOpen: { control: "boolean" },
@@ -105,6 +105,42 @@ function SheetPreview({ overlayProps, ...props }: SheetProps & Pick<SheetContent
 
 export const Default = {} satisfies Story;
 export const InitiallyOpen = { args: { defaultOpen: true } } satisfies Story;
+
+export const LongContent = {
+  render: () => (
+    <Sheet defaultOpen>
+      <SheetContent lang="fa" className="w-3/4 sm:max-w-sm">
+        <SheetHeader>
+          <SheetTitle>راهنمای خدمات دانشگاه</SheetTitle>
+          <SheetDescription>فهرست کامل خدمات و راهنمای استفاده از سامانه‌ها</SheetDescription>
+        </SheetHeader>
+        <div className="grid gap-4 px-6 pb-6 leading-7">
+          <p>
+            این متن طولانی برای بررسی پیمایش عمودی پنل، بزرگ‌نمایی مرورگر و افزایش فاصله خطوط در صفحه‌های کوچک نوشته شده
+            است.
+          </p>
+          <p>
+            محتوای پنل باید بدون بریدگی یا پیمایش افقی در دسترس بماند و کاربر بتواند با صفحه‌کلید به همه کنترل‌ها برسد.
+          </p>
+          <p>
+            راهنمای آموزش، پژوهش، رفاه و ارتباط با دانشگاه در این بخش قرار می‌گیرد و در ارتفاع‌های مختلف قابل پیمایش
+            خواهد بود.
+          </p>
+        </div>
+        <SheetFooter>
+          <SheetClose render={<Button variant="outline" />}>بستن راهنما</SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(canvasElement.ownerDocument.body);
+    const dialog = body.getByRole("dialog", { name: "راهنمای خدمات دانشگاه" });
+    await expect(dialog).toHaveAttribute("dir", "rtl");
+    await expect(getComputedStyle(dialog).overflowY).toBe("auto");
+    await expect(body.getByText(/این متن طولانی برای بررسی پیمایش عمودی پنل/)).toBeInTheDocument();
+  },
+} satisfies Story;
 
 /*===== Backdrop Customization =====*/
 

@@ -13,7 +13,7 @@ import { PageContainer, SectionHeading } from "./layout";
 function AchievementCard({ story, featured }: { story: UniversityStory; featured: boolean }) {
   return (
     <article className={featured ? "lg:row-span-2" : ""}>
-      <Card className="h-full border ring-0 sm:rounded-3xl">
+      <Card radius="lg" className="h-full">
         <CardLink
           id={story.id}
           href={story.href}
@@ -22,7 +22,7 @@ function AchievementCard({ story, featured }: { story: UniversityStory; featured
           {/*------ Story Image ------*/}
           <div
             className={cn(
-              "bg-muted relative shrink-0 overflow-hidden",
+              "relative shrink-0 overflow-hidden bg-muted",
               featured ? "aspect-[1.85]" : "aspect-[1.85] sm:aspect-auto sm:w-[38%]",
             )}
           >
@@ -49,17 +49,17 @@ function AchievementCard({ story, featured }: { story: UniversityStory; featured
             </Eyebrow>
             <h3
               className={cn(
-                "group-hover:text-primary font-bold transition-colors",
+                "font-bold transition-colors group-hover:text-primary",
                 featured ? "text-lg leading-9 sm:text-xl" : "text-base leading-8",
               )}
             >
               {story.title}
             </h3>
-            <p className="text-muted-foreground mt-3 text-xs leading-7 sm:text-sm">{story.summary}</p>
+            <p className="mt-3 text-xs leading-7 text-muted-foreground sm:text-sm">{story.summary}</p>
             <div className="mt-auto pt-5">
-              <span className="text-primary flex items-center justify-between gap-3 border-t pt-4 text-xs font-semibold">
+              <span className="flex items-center justify-between gap-3 border-t pt-4 text-xs font-semibold text-primary">
                 بیشتر بخوانید
-                <span className="bg-secondary group-hover:bg-primary group-hover:text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-full transition-colors">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   <ArrowUpLeft className="size-4" aria-hidden="true" />
                 </span>
               </span>
@@ -96,15 +96,15 @@ export function AchievementsSection() {
 /*===== Continuing Education and Industry =====*/
 export function CoursesSection() {
   return (
-    <section aria-labelledby="courses-title" className="bg-muted/55 border-y py-14 sm:py-20">
+    <section aria-labelledby="courses-title" className="border-y bg-muted/55 py-14 sm:py-20">
       <PageContainer className="grid items-stretch gap-6 lg:grid-cols-[0.85fr_1.6fr] lg:gap-8">
         {/*------ Learning Introduction ------*/}
-        <div className="bg-university relative isolate flex flex-col overflow-hidden rounded-3xl p-6 text-white sm:p-8 lg:p-9">
+        <div className="relative isolate flex flex-col overflow-hidden rounded-3xl bg-university p-6 text-white sm:p-8 lg:p-9">
           <div
             className="pointer-events-none absolute -start-20 -bottom-32 -z-10 size-80 rounded-full border border-white/10"
             aria-hidden="true"
           />
-          <span className="text-highlight mb-8 flex size-14 items-center justify-center rounded-2xl border border-white/15 bg-white/5">
+          <span className="mb-8 flex size-14 items-center justify-center rounded-2xl border border-white/15 bg-white/5 text-highlight">
             <BookOpen className="size-7" strokeWidth={1.5} aria-hidden="true" />
           </span>
           <Eyebrow variant="highlight" className="mb-3">
@@ -117,13 +117,11 @@ export function CoursesSection() {
             از کلاس درس تا محیط کار؛ دوره‌های مهارتی و تخصصی در همراهی دانشگاه و صنعت.
           </p>
           <div className="mt-auto pt-8">
-            <TextLink
-              href={destinations.growthCenter}
-              variant="highlight"
-              className="w-full justify-between rounded-none border-t border-white/20 pt-5"
-            >
-              مرکز رشد و کارآفرینی
-            </TextLink>
+            <div className="border-t border-white/20 pt-5">
+              <TextLink href={destinations.growthCenter} variant="highlight" className="w-full justify-between">
+                مرکز رشد و کارآفرینی
+              </TextLink>
+            </div>
           </div>
         </div>
 
@@ -132,30 +130,32 @@ export function CoursesSection() {
           {courses.map((course) => (
             <Card key={course.id}>
               <CardLink id={course.id} href={course.href} className="h-full scroll-mt-28">
-                <CardContent className="flex h-full items-center gap-4 sm:gap-5">
-                  <div className="bg-muted h-28 w-20 shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-36 xl:w-44">
-                    <img
-                      src={course.image}
-                      alt={course.imageAlt}
-                      width={1000}
-                      height={563}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
-                    />
+                <CardContent className="h-full">
+                  <div className="flex h-full items-center gap-4 sm:gap-5">
+                    <div className="h-28 w-20 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-32 sm:w-36 xl:w-44">
+                      <img
+                        src={course.image}
+                        alt={course.imageAlt}
+                        width={1000}
+                        height={563}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 py-1">
+                      <Badge variant="secondary" className="mb-2">
+                        {course.category}
+                      </Badge>
+                      <h3 className="text-sm leading-7 font-semibold transition-colors group-hover:text-primary sm:text-base">
+                        {course.title}
+                      </h3>
+                      <p className="mt-2 text-xs leading-6 text-muted-foreground">{course.summary}</p>
+                    </div>
+                    <span className="hidden size-10 shrink-0 items-center justify-center rounded-full border text-primary transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground sm:flex">
+                      <ArrowLeft className="size-4" aria-hidden="true" />
+                    </span>
                   </div>
-                  <div className="min-w-0 flex-1 py-1">
-                    <Badge variant="secondary" className="mb-2">
-                      {course.category}
-                    </Badge>
-                    <h3 className="group-hover:text-primary text-sm leading-7 font-semibold transition-colors sm:text-base">
-                      {course.title}
-                    </h3>
-                    <p className="text-muted-foreground mt-2 text-xs leading-6">{course.summary}</p>
-                  </div>
-                  <span className="text-primary group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground hidden size-10 shrink-0 items-center justify-center rounded-full border transition-colors sm:flex">
-                    <ArrowLeft className="size-4" aria-hidden="true" />
-                  </span>
                 </CardContent>
               </CardLink>
             </Card>

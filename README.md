@@ -82,6 +82,7 @@ Make sure to deploy the output of `npm run build`
 
 The university UI uses Tailwind CSS, Vazirmatn Variable, and styled Base UI primitives.
 
+- [Design principles](docs/design-principles.md): visual direction, ergonomics, interaction, responsive behavior, and accessibility.
 - [Component conventions](docs/components.md): component ownership, readable style groups, and customization.
 - [Style and typography](docs/style-and-typography.md): the current palette, surfaces, Persian type hierarchy, and spacing.
 

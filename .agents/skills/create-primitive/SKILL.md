@@ -32,13 +32,13 @@ Use CVA when there are meaningful variant axes. Derive variant prop types from t
 
 For interactive controls, use the installed Base UI behavior when appropriate. Inspect its local types and an existing wrapper rather than assuming a different primitive library's API. Preserve refs, native attributes, event handlers, `render`, and state-based `className` where the underlying component supports them. Native elements should retain native semantics. Add stable `data-slot` names for meaningful parts.
 
-Keep customization reachable: recurring choices belong in variants, one-off styling in `className`, and necessary inner-part customization in composition or narrowly scoped props. Avoid inserting an automatic internal part that consumers cannot replace or configure. Preserve accessible naming, keyboard behavior, Persian RTL layout, focus visibility, dark-theme contrast, and reduced-motion behavior.
+Keep customization reachable: recurring choices belong in variants, one-off styling in `className`, and necessary inner-part customization in composition or narrowly scoped props. Avoid inserting an automatic internal part that consumers cannot replace or configure. Ensure the primitive satisfies all applicable WCAG 2.2 Level AA success criteria. Preserve accessible naming, semantic name/role/value, keyboard behavior, Persian RTL layout, focus visibility and appearance, target sizing, light- and dark-theme contrast, error and state communication, and reduced-motion behavior.
 
 ## Integrate and verify
 
 Migrate the consumers requested by the user, removing overrides now supplied by the primitive. Preserve route links, content, data flow, and accessibility semantics. Keep route exports and route-only internals inside their flat route slice. Do not turn a component extraction into an unrelated migration of the whole `ui` collection.
 
-Add colocated stories with Persian content and the relevant variants, sizes, themes, and states. Include long-text or optional-content cases where they can expose layout problems. For behavioral or composition changes, cover the affected keyboard, focus, ref, or override contract with meaningful interaction checks.
+Add colocated stories with Persian content and the relevant variants, sizes, themes, and states. Include long-text or optional-content cases where they can expose layout problems. For behavioral or composition changes, cover the affected keyboard, focus, ref, or override contract with meaningful interaction checks. Verify applicable WCAG 2.2 Level AA requirements through automated checks where practical and manual inspection where automation is insufficient.
 
 Format changed files, run `npm run typecheck`, and lint the changed scope. Run relevant Storybook checks for behavior changes; distinguish test-infrastructure failures from component failures. Avoid changing unrelated tooling merely to make a check pass. Update the component docs only if this work changes a shared convention.
 

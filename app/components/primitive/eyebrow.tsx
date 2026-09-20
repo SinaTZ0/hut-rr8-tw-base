@@ -26,6 +26,7 @@ const twVariant = defineStyles({
   },
   inverse: {
     appearance: "text-white/90",
+    typography: "font-medium",
   },
 });
 
@@ -89,6 +90,7 @@ export type EyebrowProps = ComponentProps<"p"> & VariantProps<typeof eyebrowVari
 /**
  * An editorial label with a decorative marker and native paragraph props and refs.
  * Use variant, size, and marker for styling; surrounding spacing belongs to the consumer.
+ * The highlight variant is intended for the university's dark surface so its gold text remains AA-contrast.
  */
 function Eyebrow({ className, children, variant, size, marker, ...props }: EyebrowProps) {
   return (

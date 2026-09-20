@@ -1,13 +1,34 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "ignorePatterns": ["old-routes/**", ".tmp-codex/**", "build/**", "storybook-static/**"],
+  "jsPlugins": ["@shadcn/lint"],
   "plugins": ["react", "typescript", "unicorn", "oxc"],
   "categories": {
     "correctness": "error"
   },
   "rules": {
-    "react/rules-of-hooks": "error"
+    "react/rules-of-hooks": "error",
+    "shadcn/no-restyle": [
+      "error",
+      {
+        "allow": ["layout"]
+      }
+    ]
   },
+  "settings": {
+    "shadcn": {
+      "componentImports": ["^~/components/primitive(?:/|$)"],
+      "note": "Use or update a primitive instead of overriding its visual contract. See AGENTS.md#primitive-first-ui."
+    }
+  },
+  "overrides": [
+    {
+      "files": ["app/components/primitive/**", "app/components/ui/**"],
+      "rules": {
+        "shadcn/no-restyle": "off"
+      }
+    }
+  ],
   "env": {
     "builtin": true
   }

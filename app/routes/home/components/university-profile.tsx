@@ -29,7 +29,7 @@ function StudentLifeVideo() {
             </Button>
             <button
               type="button"
-              className="min-h-11 rounded-md px-3 text-xs text-white/80 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-highlight"
+              className="min-h-11 rounded-md px-3 text-xs text-white/80 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
               onClick={() => {
                 setRequested(false);
                 setFailed(false);
@@ -54,7 +54,7 @@ function StudentLifeVideo() {
         ) : (
           <button
             type="button"
-            className="group relative block aspect-[16/10] w-full focus-visible:outline-4 focus-visible:-outline-offset-4 focus-visible:outline-highlight"
+            className="group relative block aspect-[16/10] w-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
             aria-label="پخش ویدیوی زندگی دانشجویی؛ جشن روز دانشجو"
             onClick={() => setRequested(true)}
           >
@@ -87,7 +87,7 @@ function StudentLifeVideo() {
         <span>جشن روز دانشجو · دانشگاه صنعتی همدان</span>
         <a
           href={destinations.aparat}
-          className="flex min-h-11 items-center gap-1 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-highlight"
+          className="flex min-h-11 items-center gap-1 rounded-md hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
         >
           ویدیوهای بیشتر <ArrowUpLeft className="size-3" aria-hidden="true" />
         </a>

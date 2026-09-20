@@ -33,7 +33,7 @@ const meta = {
       </DirectionProvider>
     ),
   ],
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { test: "error" } },
   tags: ["autodocs"],
   argTypes: {
     align: { control: "select", options: ["start", "center", "end"] },
