@@ -3,6 +3,7 @@ import { ArrowUpLeft, Menu, Monitor, Moon, Sun, X } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/primitive/accordion";
 import { Button } from "~/components/primitive/button";
+import { Separator } from "~/components/primitive/separator";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -183,9 +184,10 @@ export function Header() {
                 <NavigationMenuItem key={group.label}>
                   <NavigationMenuTrigger>{group.label}</NavigationMenuTrigger>
                   <NavigationMenuContent className="w-[310px]">
-                    <p className="mb-3 border-b px-2 pb-3 text-xs leading-6 text-muted-foreground">
-                      {group.description}
-                    </p>
+                    <div className="mb-3 px-2">
+                      <p className="text-xs leading-6 text-muted-foreground">{group.description}</p>
+                      <Separator aria-hidden="true" className="-mx-2 mt-3" />
+                    </div>
                     {group.links.map((link) => (
                       <NavigationMenuLink key={link.label} href={link.href}>
                         {link.label}

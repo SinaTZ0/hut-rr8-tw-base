@@ -1,6 +1,7 @@
 import { CalendarDays } from "lucide-react";
 
 import { Badge } from "~/components/primitive/badge";
+import { Separator } from "~/components/primitive/separator";
 
 import { academicCalendar, destinations } from "../content";
 import { PageContainer, SectionHeading } from "./layout";
@@ -23,12 +24,15 @@ export function CalendarSection() {
           link={{ label: "تقویم کامل آموزشی", href: destinations.calendar }}
         />
         <div className="rounded-2xl border bg-card p-5 sm:p-7 lg:p-8">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b pb-5 sm:mb-8">
-            <p className="flex items-center gap-2 text-sm font-medium">
-              <CalendarDays className="size-4 text-primary" aria-hidden="true" />
-              نیم‌سال دوم ۱۴۰۴–۱۴۰۵
-            </p>
-            <Badge variant="secondary">آرشیو تقویم آموزشی</Badge>
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="flex items-center gap-2 text-sm font-medium">
+                <CalendarDays className="size-4 text-primary" aria-hidden="true" />
+                نیم‌سال دوم ۱۴۰۴–۱۴۰۵
+              </p>
+              <Badge variant="secondary">آرشیو تقویم آموزشی</Badge>
+            </div>
+            <Separator aria-hidden="true" className="mt-5" />
           </div>
           <ol className="relative md:grid md:grid-cols-7 md:before:absolute md:before:top-[66px] md:before:right-[7%] md:before:left-[7%] md:before:h-px md:before:bg-border">
             {academicCalendar.map((milestone) => (

@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowUpLeft, GraduationCap, Mail, MapPin, MessagesSquare, Ph
 
 import { Button } from "~/components/primitive/button";
 import { LinkTile } from "~/components/primitive/link-tile";
+import { Separator } from "~/components/primitive/separator";
 import { TextLink } from "~/components/primitive/text-link";
 
 import { destinations, services } from "../content";
@@ -53,7 +54,7 @@ export function StudentSupport() {
               </Button>
             </div>
           </div>
-          <div className="flex flex-col justify-center divide-y divide-border px-7 sm:px-9 lg:px-10">
+          <div className="flex flex-col justify-center px-7 sm:px-9 lg:px-10">
             <LinkTile
               href={destinations.contact}
               icon={<MessagesSquare strokeWidth={1.5} />}
@@ -62,6 +63,7 @@ export function StudentSupport() {
             >
               صدای شما برای ما مهم است
             </LinkTile>
+            <Separator aria-hidden="true" className="-mx-3" />
             <LinkTile
               href="http://counseling.hut.ac.ir"
               icon={<Phone strokeWidth={1.5} />}

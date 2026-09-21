@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowUpLeft, BookOpen } from "lucide-react";
 import { Badge } from "~/components/primitive/badge";
 import { Card, CardContent, CardLink } from "~/components/primitive/card";
 import { Eyebrow } from "~/components/primitive/eyebrow";
+import { Separator } from "~/components/primitive/separator";
 import { TextLink } from "~/components/primitive/text-link";
 
 import { achievements, courses, destinations, type UniversityStory } from "../content";
@@ -57,7 +58,8 @@ function AchievementCard({ story, featured }: { story: UniversityStory; featured
             </h3>
             <p className="mt-3 text-xs leading-7 text-muted-foreground sm:text-sm">{story.summary}</p>
             <div className="mt-auto pt-5">
-              <span className="flex items-center justify-between gap-3 border-t pt-4 text-xs font-semibold text-primary">
+              <Separator aria-hidden="true" className="mb-4" />
+              <span className="flex items-center justify-between gap-3 text-xs font-semibold text-primary">
                 بیشتر بخوانید
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                   <ArrowUpLeft className="size-4" aria-hidden="true" />
@@ -117,7 +119,8 @@ export function CoursesSection() {
             از کلاس درس تا محیط کار؛ دوره‌های مهارتی و تخصصی در همراهی دانشگاه و صنعت.
           </p>
           <div className="mt-auto pt-8">
-            <div className="border-t border-white/20 pt-5">
+            <div>
+              <Separator variant="inverse" aria-hidden="true" className="mb-5" />
               <TextLink href={destinations.growthCenter} variant="highlight" className="w-full justify-between">
                 مرکز رشد و کارآفرینی
               </TextLink>

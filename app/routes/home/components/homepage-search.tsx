@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/primitive/dialog";
+import { Separator } from "~/components/primitive/separator";
 
 import { searchGroups } from "../content";
 
@@ -98,9 +99,12 @@ export function HomepageSearch() {
             ))}
           </CommandList>
         </Command>
-        <p className="border-t bg-muted/60 px-5 py-3 text-xs leading-6 text-muted-foreground">
-          با کلیدهای جهت‌نما انتخاب کنید و با Enter وارد شوید.
-        </p>
+        <div className="bg-muted/60">
+          <Separator aria-hidden="true" />
+          <p className="px-5 py-3 text-xs leading-6 text-muted-foreground">
+            با کلیدهای جهت‌نما انتخاب کنید و با Enter وارد شوید.
+          </p>
+        </div>
       </DialogContent>
     </Dialog>
   );
