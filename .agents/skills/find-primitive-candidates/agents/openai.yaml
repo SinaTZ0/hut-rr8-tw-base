@@ -1,4 +1,0 @@
-interface:
-  display_name: "Find Primitive Candidates"
-  short_description: "Find reusable UI candidates in a chosen scope"
-  default_prompt: "Use $find-primitive-candidates to review the specified scope, or the whole app if none is supplied, and rank evidence-backed primitive opportunities."

@@ -1,21 +1,19 @@
 ---
 name: create-primitive
-description: "Create or extract a reusable university UI primitive through four serial delegated stages: source-compatible shadcn/Base UI copying, defineStyles architecture, WCAG 2.2 AA hardening, and justified variants/sizes with a colocated Storybook story. Use when adding a primitive or implementing an identified extraction candidate; ordinary page composition does not require this skill."
+description: "Create or extract a reusable university UI primitive through four sequential stages: source-compatible shadcn/Base UI copying, defineStyles architecture, WCAG 2.2 AA hardening, and justified variants/sizes with a colocated Storybook story. Use when adding a primitive or implementing an identified extraction candidate; ordinary page composition does not require this skill."
 ---
 
 # Create a primitive
 
 Create a reusable university component whose API, behavior, and styles are easy to locate and change. Preserve the source appearance and behavior during extraction unless a later stage or the user explicitly requests a redesign.
 
-## Required serial delegation
+## Required sequential stages
 
-This workflow is four delegated implementation stages, not one blended task. Delegate exactly one agent for each stage and run the agents strictly in series. Every stage must start from a complete, compiling artifact produced by the previous stage; a later agent must not be asked to repair an incomplete handoff from an earlier stage.
+Complete the four implementation stages in this task without creating or spawning subagents. Keep them sequential rather than blending them together: each stage starts only after the current agent has produced and checked a complete, compiling artifact for the previous stage. A later stage must not be used to repair an incomplete earlier stage.
 
-- Request every stage agent with maximum reasoning (`model: gpt-5.6-luna`, `reasoning_effort: max`).
-- Start only stage 1. Wait for its artifact and validation report before starting stage 2; repeat the same gate between stages 2→3 and 3→4. Never run these implementation agents in parallel.
-- Give each agent the repository root, the exact primitive path, the source chosen, and the preceding handoff report. The agent may modify only the requested primitive slice and explicitly requested consumers; it must preserve unrelated user changes.
-- Require each agent to return the changed files, public API, source/behavior decisions, commands run, validation results, and unresolved limitations. If its compile gate fails, keep the work in that stage until the artifact is fixed and revalidated.
-- If delegation or the required Luna/max-reasoning request is unavailable, do not claim that the four-stage workflow ran; report that the workflow is blocked instead of silently collapsing stages into one agent.
+- Finish stage 1 and record its artifact and validation results before starting stage 2; repeat the same gate between stages 2→3 and 3→4.
+- Work only in the requested primitive slice and explicitly requested consumers; preserve unrelated user changes.
+- At each gate, record the changed files, public API, source/behavior decisions, commands run, validation results, and unresolved limitations. If a compile gate fails, keep working in that stage until the artifact is fixed and revalidated.
 
 The stage boundaries are deliberate:
 
@@ -24,7 +22,7 @@ The stage boundaries are deliberate:
 3. **WCAG hardening:** audit and fix the component for WCAG 2.2 Level AA, RTL, themes, keyboard behavior, and reduced motion.
 4. **Design-system completion:** add only sensible, reusable variants or sizes when needed, add a colocated Storybook story, migrate requested consumers, and perform final verification.
 
-Each agent reads the applicable repository `AGENTS.md` before editing. Work from the repository root. Inspect `git status` first and preserve all pre-existing user changes in tracked or untracked files; do not reset, overwrite, or clean them. Put temporary scripts, generated source, diagnostics, and logs in `.tmp-codex/`, never in deliverable source locations.
+Before editing, read the applicable repository `AGENTS.md`. Work from the repository root. Inspect `git status` first and preserve all pre-existing user changes in tracked or untracked files; do not reset, overwrite, or clean them. Put temporary scripts, generated source, diagnostics, and logs in `.tmp-codex/`, never in deliverable source locations.
 
 ## Ground the design
 
@@ -63,7 +61,7 @@ Compare the chosen source with nearby primitives and the installed package types
 
 ### Stage 1 gate and handoff
 
-The stage 1 agent must leave a clean, compilation-ready primitive file before handoff. Check that the target imports resolve, all public exports are present, the source's refs/props/state callbacks remain type-safe, and no unrelated files changed. Run `npm run typecheck` and the repository-required `npm run lint`; fix errors in the stage's scope before handing off. If an unrelated pre-existing failure prevents a repository-wide command, record the exact failure and still require the new primitive itself to compile; never edit an unrelated user file to hide it.
+Before advancing from stage 1, leave a clean, compilation-ready primitive file. Check that the target imports resolve, all public exports are present, the source's refs/props/state callbacks remain type-safe, and no unrelated files changed. Run `npm run typecheck` and the repository-required `npm run lint`; fix errors in the stage's scope before proceeding. If an unrelated pre-existing failure prevents a repository-wide command, record the exact failure and still require the new primitive itself to compile; never edit an unrelated user file to hide it.
 
 The handoff must include the target path, source path/registry revision, public surface copied, import/path adaptations, files changed, and the typecheck/lint results. Stage 2 may start only after this report describes a complete compiling artifact.
 
@@ -104,7 +102,7 @@ Inventory every class string in the copied primitive and classify it before movi
 
 Do not perform the Stage 3 WCAG audit or add accessibility remediation, contrast/target-size changes, keyboard behavior changes, RTL fixes, or new reduced-motion behavior here; preserve the source's existing behavior and report concerns for Stage 3. Do not add Stage 4 variants or sizes, stories, consumer migrations, or one-off API conveniences. Recheck existing consumers before changing any defaults, and document any unavoidable local adaptation for the repository's `cn` alias or installed Base UI version instead of introducing a second helper.
 
-The stage 2 agent must compare the public exports, prop types, CVA defaults, rendered tags, `data-slot` markers, and callback/ref behavior before and after the refactor. Run `npm run typecheck` and the repository-required `npm run lint`; fix errors in the target scope before handoff. Stage 3 may start only after the target primitive and its style architecture compile cleanly, with a report containing the target path, maps/composition decisions, API/defaults and behavior-preservation check, files changed, commands/results, and unresolved limitations. If an unrelated pre-existing failure blocks a repository-wide command, record the exact failure while still proving the changed primitive compiles; never alter unrelated user files to hide it.
+Before advancing from stage 2, compare the public exports, prop types, CVA defaults, rendered tags, `data-slot` markers, and callback/ref behavior before and after the refactor. Run `npm run typecheck` and the repository-required `npm run lint`; fix errors in the target scope before proceeding. Stage 3 may start only after the target primitive and its style architecture compile cleanly, with a report containing the target path, maps/composition decisions, API/defaults and behavior-preservation check, files changed, commands/results, and unresolved limitations. If an unrelated pre-existing failure blocks a repository-wide command, record the exact failure while still proving the changed primitive compiles; never alter unrelated user files to hide it.
 
 ## Stage 3 — WCAG 2.2 Level AA hardening
 
@@ -203,7 +201,7 @@ Migrate only consumers explicitly requested by the user or consumers that suppli
 
 Use only commands configured by this repository; do not invent `npm test`, `npm run test`, or a Storybook interaction script. Format only the changed files, then run `npm run typecheck`, `npm run lint`, and `git diff --check`. Run `npm run build-storybook` to validate the Storybook build; that build is not an interaction or a11y run. When browser execution is available, run the configured Storybook Vitest project with `npx vitest --project storybook` for interaction/a11y stories, and distinguish browser/test-infrastructure failures from component or story failures. `npm run storybook` is a manual preview server, not a substitute for those checks. Do not change unrelated tooling to make a check pass.
 
-Before handoff, review the entire skill for contradictory or repeated instructions, stale paths/commands, discoverability, and the skill-creator progressive-disclosure rules. Report the exact files changed, the option decision and evidence (including an explicit no-new-option decision when applicable), story coverage, migrated consumers, all four stage handoffs, command results, and unresolved limitations. Update component docs only when this work changes a shared convention.
+Before handoff, review the entire skill for contradictory or repeated instructions, stale paths/commands, discoverability, and the skill-creator progressive-disclosure rules. Report the exact files changed, the option decision and evidence (including an explicit no-new-option decision when applicable), story coverage, migrated consumers, all four stage gate reports, command results, and unresolved limitations. Update component docs only when this work changes a shared convention.
 
 ## Non-shadcn extraction mode
 
@@ -213,4 +211,4 @@ Keep route-specific sections and editorial composition in their route slice. Pro
 
 ## Completion report
 
-Report the final primitive API and public subcomponents, source and adaptations, variants/sizes and their rationale, migrated consumers, the four stage handoffs, validation commands/results, and any remaining limitation. Keep staging and committing separate unless the user requests a commit.
+Report the final primitive API and public subcomponents, source and adaptations, variants/sizes and their rationale, migrated consumers, the four stage gate reports, validation commands/results, and any remaining limitation. Keep staging and committing separate unless the user requests a commit.
