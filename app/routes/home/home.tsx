@@ -1,13 +1,16 @@
 import type { Route } from "./+types/home";
 
+import { SiteFooter } from "~/components/site/site-footer";
+import { SiteHeader } from "~/components/site/site-header";
+
 import { CalendarSection } from "./components/calendar-section";
-import { Header } from "./components/header";
 import { Hero } from "./components/hero";
 import { NewsSection } from "./components/news-section";
 import { ServiceShortcuts } from "./components/service-shortcuts";
 import { AchievementsSection, CoursesSection } from "./components/stories-sections";
-import { Footer, StudentSupport } from "./components/support-and-footer";
+import { StudentSupport } from "./components/support-and-footer";
 import { UniversityProfile } from "./components/university-profile";
+import { searchGroups } from "./content";
 
 /*===== Page Metadata =====*/
 export function meta(_args: Route.MetaArgs) {
@@ -32,7 +35,7 @@ export default function Home() {
       >
         پرش به محتوای اصلی
       </a>
-      <Header />
+      <SiteHeader searchGroups={searchGroups} />
       <main id="homepage-main" tabIndex={-1} className="scroll-mt-24 outline-none">
         {/*===== Identity and Everyday Services =====*/}
         <Hero />
@@ -46,7 +49,7 @@ export default function Home() {
         <CoursesSection />
         <StudentSupport />
       </main>
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }

@@ -3,9 +3,8 @@ import { ArrowLeft, ArrowUpLeft, CalendarDays, MapPin } from "lucide-react";
 import campusImage from "~/assets/hero-campus-overview.png";
 import { Button } from "~/components/primitive/button";
 import { Eyebrow } from "~/components/primitive/eyebrow";
-
-import { destinations } from "../content";
-import { PageContainer } from "./layout";
+import { PageContainer } from "~/components/site/page-container";
+import { destinations } from "~/content/university-links";
 
 /*===== Campus-led Introduction =====*/
 export function Hero() {

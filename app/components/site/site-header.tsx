@@ -3,7 +3,6 @@ import { ArrowUpLeft, Menu, Monitor, Moon, Sun, X } from "lucide-react";
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/primitive/accordion";
 import { Button } from "~/components/primitive/button";
-import { Separator } from "~/components/primitive/separator";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,6 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "~/components/primitive/navigation-menu";
+import { Separator } from "~/components/primitive/separator";
 import {
   Sheet,
   SheetClose,
@@ -21,13 +21,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/primitive/sheet";
+import {
+  destinations,
+  navigationGroups,
+  siteSearchGroups,
+  type UniversitySearchGroup,
+} from "~/content/university-links";
 import { getNextTheme, type ThemePreference } from "~/theme/theme";
 import { useTheme } from "~/theme/theme-provider";
 
-import { destinations, navigationGroups } from "../content";
 import { Brand } from "./brand";
-import { HomepageSearch } from "./homepage-search";
-import { PageContainer } from "./layout";
+import { PageContainer } from "./page-container";
+import { SiteSearch } from "./site-search";
 
 /*===== Theme Control =====*/
 
@@ -49,6 +54,7 @@ function getThemeControlLabel(theme: ThemePreference) {
 }
 
 /*===== Mobile Navigation =====*/
+
 function MobileNavigation({
   theme,
   cycleTheme,
@@ -144,7 +150,8 @@ function MobileNavigation({
 }
 
 /*===== University Header =====*/
-export function Header() {
+
+export function SiteHeader({ searchGroups = siteSearchGroups }: { searchGroups?: UniversitySearchGroup[] }) {
   const { theme, cycleTheme, isPending } = useTheme();
   const themeLabel = getThemeControlLabel(theme);
 
@@ -203,7 +210,7 @@ export function Header() {
             </NavigationMenuList>
           </NavigationMenu>
           <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-            <HomepageSearch />
+            <SiteSearch groups={searchGroups} />
             <Button
               variant="ghost"
               size="icon"

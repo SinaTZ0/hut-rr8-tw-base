@@ -2,9 +2,11 @@ import { CalendarDays } from "lucide-react";
 
 import { Badge } from "~/components/primitive/badge";
 import { Separator } from "~/components/primitive/separator";
+import { PageContainer } from "~/components/site/page-container";
+import { destinations } from "~/content/university-links";
 
-import { academicCalendar, destinations } from "../content";
-import { PageContainer, SectionHeading } from "./layout";
+import { academicCalendar } from "../content";
+import { SectionHeading } from "./layout";
 
 /*===== Semester Timeline =====*/
 export function CalendarSection() {

@@ -1,45 +1,5 @@
 # Complaints and Feedback Form
 
-## Purpose
-
-Build the Persian, right-to-left form UI for `app/routes/complaints-and-feedback.tsx`.
-
-The page lets visitors submit a complaint, suggestion, or criticism to the university. This brief documents the visible form, its copy, fields, select options, client-side feedback, and responsive behavior.
-
-This document does not define database persistence, server actions, CAPTCHA verification, tracking-code generation, or email/notification delivery.
-
-## Page language and layout
-
-- Set the document/page direction to `rtl` and the language to Persian (`fa`).
-- Render the existing shared site header above the page and the shared footer/floating links below it when those components exist in the new project.
-- Keep the form accessible from the page's main content using a skip link such as `پرش به محتوای اصلی`.
-- Use a calm university visual style: deep teal/blue branding, teal accents, gold highlights, surface-colored cards, rounded corners, and clear focus states.
-- Use a two-column desktop layout:
-  - Main column: the form card.
-  - Secondary column: the request-follow-up guide.
-- At widths below approximately `900px`, stack the columns and place the guide before the form.
-- At widths below approximately `640px`, make the form fields and action area single-column and make the submit button full width.
-
-## Visible page copy
-
-### Hero
-
-- Eyebrow: `سامانه ارتباط با دانشگاه`
-- Heading: `ثبت شکایات و پیشنهادات`
-- Lead: `دیدگاه‌ها و تجربه‌های خود را با ما در میان بگذارید تا برای بهبود خدمات دانشگاه بررسی و پیگیری شود.`
-
-### Form section
-
-- Eyebrow: `فرم ارتباط`
-- Heading: `پیام خود را ثبت کنید`
-- Intro: `لطفاً اطلاعات زیر را با دقت وارد کنید. موارد ستاره‌دار الزامی هستند.`
-- Form card heading: `مشخصات درخواست`
-- Form card description: `اطلاعات تماس اختیاری است، اما در صورت درج می‌تواند به پیگیری بهتر کمک کند.`
-- Optional marker: `(اختیاری)`
-- Required marker: `*`
-- Required-fields note: `* تکمیل این موارد الزامی است.`
-- Submit button: `ثبت و ارسال پیام`
-
 ## Form fields
 
 Use the field names and IDs below exactly so the new form has a stable contract for validation and future submission wiring.

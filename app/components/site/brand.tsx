@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import logo from "~/assets/branding-navbar-logo.png";
 
 /*===== University Identity =====*/
+
 export function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
     <Link

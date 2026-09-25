@@ -3,9 +3,11 @@ import { ArrowLeft, Bell, Clock3 } from "lucide-react";
 import { Badge } from "~/components/primitive/badge";
 import { Card, CardAction, CardContent, CardFooter, CardHeader, CardLink } from "~/components/primitive/card";
 import { TextLink } from "~/components/primitive/text-link";
+import { PageContainer } from "~/components/site/page-container";
+import { destinations } from "~/content/university-links";
 
-import { destinations, news, notices, type UniversityStory } from "../content";
-import { PageContainer, SectionHeading } from "./layout";
+import { news, notices, type UniversityStory } from "../content";
+import { SectionHeading } from "./layout";
 
 /*===== Editorial News Cards =====*/
 function NewsCard({ story, featured = false }: { story: UniversityStory; featured?: boolean }) {

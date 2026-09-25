@@ -31,6 +31,7 @@ const meta = {
     icon: { control: false },
     className: { control: false },
     ref: { control: false },
+    render: { control: false },
     onClick: { control: false },
   },
   args: {
@@ -147,6 +148,21 @@ export const NativeAttributes = {
     await expect(link).toHaveAccessibleDescription("در پنجره جدید باز می‌شود");
     await expect(link.querySelector('[data-slot="link-tile-icon"]')).toHaveAttribute("aria-hidden", "true");
     await expect(link.querySelector('[data-slot="link-tile-arrow"]')).toHaveAttribute("aria-hidden", "true");
+  },
+} satisfies Story;
+
+export const CustomLinkRenderer = {
+  render: () => (
+    <LinkTile
+      render={<a href="/complaints-and-feedback" />}
+      icon={<MessagesSquare strokeWidth={1.5} />}
+      description="مسیر داخلی با مسیریاب برنامه"
+    >
+      ثبت شکایات و پیشنهادات
+    </LinkTile>
+  ),
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole("link")).toHaveAttribute("href", "/complaints-and-feedback");
   },
 } satisfies Story;
 

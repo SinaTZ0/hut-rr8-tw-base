@@ -1,7 +1,6 @@
 import { LinkTile } from "~/components/primitive/link-tile";
-
-import { services } from "../content";
-import { PageContainer } from "./layout";
+import { PageContainer } from "~/components/site/page-container";
+import { services } from "~/content/university-links";
 
 /*===== Everyday University Services =====*/
 export function ServiceShortcuts() {

@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, Search, X } from "lucide-react";
+import { useNavigate } from "react-router";
 
 import { Button } from "~/components/primitive/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
 import {
   Dialog,
   DialogClose,
@@ -13,10 +13,11 @@ import {
   DialogTrigger,
 } from "~/components/primitive/dialog";
 import { Separator } from "~/components/primitive/separator";
-
-import { searchGroups } from "../content";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
+import type { UniversitySearchGroup } from "~/content/university-links";
 
 /*===== Persian Search Matching =====*/
+
 function normalizeQuery(value: string) {
   // Persian keyboards and copied Arabic text can spell the same word differently.
   return value
@@ -28,10 +29,12 @@ function normalizeQuery(value: string) {
     .toLowerCase();
 }
 
-/*===== Homepage Search =====*/
-export function HomepageSearch() {
+/*===== University Search =====*/
+
+export function SiteSearch({ groups }: { groups: UniversitySearchGroup[] }) {
   const [open, setOpen] = useState(false);
   const destinationRef = useRef<string | null>(null);
+  const navigate = useNavigate();
 
   return (
     <Dialog
@@ -47,8 +50,6 @@ export function HomepageSearch() {
       <DialogContent
         className="sm:max-w-xl"
         finalFocus={() => {
-          // Section targets let Base UI focus their first actionable child;
-          // article targets are already links. Resolve without consuming the ref.
           const anchor = destinationRef.current;
           if (!anchor) return true;
           const target = document.getElementById(anchor);
@@ -59,7 +60,7 @@ export function HomepageSearch() {
         <DialogHeader>
           <div>
             <DialogTitle>جستجو در دانشگاه</DialogTitle>
-            <DialogDescription className="mt-1">سامانه‌ها، بخش‌های دانشگاه و مطالب این صفحه</DialogDescription>
+            <DialogDescription className="mt-1">سامانه‌ها، بخش‌های دانشگاه و مطالب برگزیده</DialogDescription>
           </div>
           <DialogClose render={<Button variant="ghost" size="icon" aria-label="بستن جستجو" />}>
             <X aria-hidden="true" />
@@ -73,7 +74,7 @@ export function HomepageSearch() {
           <CommandInput size="lg" autoFocus placeholder="چه چیزی را جستجو می‌کنید؟" aria-label="عبارت جستجو" />
           <CommandList className="mt-3 max-h-[min(55vh,420px)]">
             <CommandEmpty>نتیجه‌ای پیدا نشد. عبارت دیگری را امتحان کنید.</CommandEmpty>
-            {searchGroups.map((group) => (
+            {groups.map((group) => (
               <CommandGroup key={group.label} heading={group.label}>
                 {group.links.map((link) => (
                   <CommandItem
@@ -85,9 +86,16 @@ export function HomepageSearch() {
                         destinationRef.current = link.href.slice(1);
                         window.history.replaceState(window.history.state, "", link.href);
                         setOpen(false);
-                      } else {
-                        window.location.assign(link.href);
+                        return;
                       }
+
+                      if (link.href.startsWith("/")) {
+                        setOpen(false);
+                        navigate(link.href);
+                        return;
+                      }
+
+                      window.location.assign(link.href);
                     }}
                   >
                     <Search className="size-3.5 text-muted-foreground" aria-hidden="true" />

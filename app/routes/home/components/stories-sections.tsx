@@ -6,9 +6,11 @@ import { Card, CardContent, CardLink } from "~/components/primitive/card";
 import { Eyebrow } from "~/components/primitive/eyebrow";
 import { Separator } from "~/components/primitive/separator";
 import { TextLink } from "~/components/primitive/text-link";
+import { PageContainer } from "~/components/site/page-container";
+import { destinations } from "~/content/university-links";
 
-import { achievements, courses, destinations, type UniversityStory } from "../content";
-import { PageContainer, SectionHeading } from "./layout";
+import { achievements, courses, type UniversityStory } from "../content";
+import { SectionHeading } from "./layout";
 
 /*===== Achievement Story Cards =====*/
 function AchievementCard({ story, featured }: { story: UniversityStory; featured: boolean }) {
