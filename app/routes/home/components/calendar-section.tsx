@@ -1,7 +1,7 @@
 import { CalendarDays } from "lucide-react";
 
-import { Badge } from "~/components/primitive/badge";
-import { Separator } from "~/components/primitive/separator";
+import { Badge } from "~/components/primitive/badge/badge";
+import { Separator } from "~/components/primitive/separator/separator";
 import { PageContainer } from "~/components/site/page-container";
 import { destinations } from "~/content/university-links";
 

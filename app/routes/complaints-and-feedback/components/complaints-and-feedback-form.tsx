@@ -5,12 +5,12 @@ import { CircleAlert, LoaderCircle, Send } from "lucide-react";
 import { useCallback, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useController, useForm, type FieldError as ReactHookFormFieldError, type FieldPath } from "react-hook-form";
 
-import { Button } from "~/components/primitive/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/primitive/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "~/components/primitive/field";
-import { Input } from "~/components/primitive/input";
-import { NativeSelect, NativeSelectOption } from "~/components/primitive/native-select";
-import { Textarea } from "~/components/primitive/textarea";
+import { Button } from "~/components/primitive/button/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/primitive/card/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "~/components/primitive/field/field";
+import { Input } from "~/components/primitive/input/input";
+import { NativeSelect, NativeSelectOption } from "~/components/primitive/native-select/native-select";
+import { Textarea } from "~/components/primitive/textarea/textarea";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { orpc } from "~/orpc/client";
 import { departmentValues, feedbackTypeValues } from "~/orpc/complaints-and-feedback/complaints-and-feedback.constants";
@@ -108,8 +108,8 @@ export function ComplaintsAndFeedbackForm() {
           form.setError(
             field as FieldPath<ComplaintsAndFeedbackFormValues>,
             {
-            type: "server",
-            message: submissionError.message,
+              type: "server",
+              message: submissionError.message,
             },
             { shouldFocus: field !== "altcha" },
           );

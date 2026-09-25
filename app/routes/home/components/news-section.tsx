@@ -1,8 +1,8 @@
 import { ArrowLeft, Bell, Clock3 } from "lucide-react";
 
-import { Badge } from "~/components/primitive/badge";
-import { Card, CardAction, CardContent, CardFooter, CardHeader, CardLink } from "~/components/primitive/card";
-import { TextLink } from "~/components/primitive/text-link";
+import { Badge } from "~/components/primitive/badge/badge";
+import { Card, CardAction, CardContent, CardFooter, CardHeader, CardLink } from "~/components/primitive/card/card";
+import { TextLink } from "~/components/primitive/text-link/text-link";
 import { PageContainer } from "~/components/site/page-container";
 import { destinations } from "~/content/university-links";
 

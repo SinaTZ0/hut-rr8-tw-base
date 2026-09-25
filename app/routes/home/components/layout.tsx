@@ -1,5 +1,5 @@
-import { Eyebrow } from "~/components/primitive/eyebrow";
-import { TextLink } from "~/components/primitive/text-link";
+import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
+import { TextLink } from "~/components/primitive/text-link/text-link";
 
 /*===== Section Heading =====*/
 

@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { ArrowUpLeft, Menu, Monitor, Moon, Sun, X } from "lucide-react";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/primitive/accordion";
-import { Button } from "~/components/primitive/button";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/primitive/accordion/accordion";
+import { Button } from "~/components/primitive/button/button";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,8 +15,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "~/components/primitive/navigation-menu";
-import { Separator } from "~/components/primitive/separator";
+} from "~/components/primitive/navigation-menu/navigation-menu";
+import { Separator } from "~/components/primitive/separator/separator";
 import {
   Sheet,
   SheetClose,
@@ -20,7 +25,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "~/components/primitive/sheet";
+} from "~/components/primitive/sheet/sheet";
 import {
   destinations,
   navigationGroups,

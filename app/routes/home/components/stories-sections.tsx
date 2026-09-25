@@ -1,11 +1,11 @@
 import { cn } from "cn";
 import { ArrowLeft, ArrowUpLeft, BookOpen } from "lucide-react";
 
-import { Badge } from "~/components/primitive/badge";
-import { Card, CardContent, CardLink } from "~/components/primitive/card";
-import { Eyebrow } from "~/components/primitive/eyebrow";
-import { Separator } from "~/components/primitive/separator";
-import { TextLink } from "~/components/primitive/text-link";
+import { Badge } from "~/components/primitive/badge/badge";
+import { Card, CardContent, CardLink } from "~/components/primitive/card/card";
+import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
+import { Separator } from "~/components/primitive/separator/separator";
+import { TextLink } from "~/components/primitive/text-link/text-link";
 import { PageContainer } from "~/components/site/page-container";
 import { destinations } from "~/content/university-links";
 

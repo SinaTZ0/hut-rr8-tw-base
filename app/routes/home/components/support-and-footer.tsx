@@ -1,9 +1,9 @@
 import { ArrowLeft, ArrowUpLeft, GraduationCap, MessagesSquare, Phone } from "lucide-react";
 import { Link } from "react-router";
 
-import { Button } from "~/components/primitive/button";
-import { LinkTile } from "~/components/primitive/link-tile";
-import { Separator } from "~/components/primitive/separator";
+import { Button } from "~/components/primitive/button/button";
+import { LinkTile } from "~/components/primitive/link-tile/link-tile";
+import { Separator } from "~/components/primitive/separator/separator";
 import { PageContainer } from "~/components/site/page-container";
 import { destinations } from "~/content/university-links";
 

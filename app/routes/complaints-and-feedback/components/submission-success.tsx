@@ -2,8 +2,8 @@ import { useState } from "react";
 import { CheckCircle2, Copy, Home, RotateCcw } from "lucide-react";
 import { Link } from "react-router";
 
-import { Button } from "~/components/primitive/button";
-import { Card, CardContent } from "~/components/primitive/card";
+import { Button } from "~/components/primitive/button/button";
+import { Card, CardContent } from "~/components/primitive/card/card";
 
 /*===== Submission Confirmation =====*/
 

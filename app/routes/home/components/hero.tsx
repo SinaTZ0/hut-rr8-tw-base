@@ -1,8 +1,8 @@
 import { ArrowLeft, ArrowUpLeft, CalendarDays, MapPin } from "lucide-react";
 
 import campusImage from "~/assets/hero-campus-overview.png";
-import { Button } from "~/components/primitive/button";
-import { Eyebrow } from "~/components/primitive/eyebrow";
+import { Button } from "~/components/primitive/button/button";
+import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
 import { PageContainer } from "~/components/site/page-container";
 import { destinations } from "~/content/university-links";
 

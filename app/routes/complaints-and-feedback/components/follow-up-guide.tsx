@@ -1,7 +1,7 @@
 import { ShieldCheck } from "lucide-react";
 
-import { Card, CardContent } from "~/components/primitive/card";
-import { Eyebrow } from "~/components/primitive/eyebrow";
+import { Card, CardContent } from "~/components/primitive/card/card";
+import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
 
 /*===== Follow-up Steps =====*/
 

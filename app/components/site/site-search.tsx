@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { ArrowLeft, Search, X } from "lucide-react";
 import { useNavigate } from "react-router";
 
-import { Button } from "~/components/primitive/button";
+import { Button } from "~/components/primitive/button/button";
 import {
   Dialog,
   DialogClose,
@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/primitive/dialog";
-import { Separator } from "~/components/primitive/separator";
+} from "~/components/primitive/dialog/dialog";
+import { Separator } from "~/components/primitive/separator/separator";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
 import type { UniversitySearchGroup } from "~/content/university-links";
 

@@ -1,6 +1,6 @@
 import { ArrowUpLeft, Mail, MapPin, Phone } from "lucide-react";
 
-import { TextLink } from "~/components/primitive/text-link";
+import { TextLink } from "~/components/primitive/text-link/text-link";
 import { destinations, services } from "~/content/university-links";
 
 import { Brand } from "./brand";

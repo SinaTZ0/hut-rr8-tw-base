@@ -1,4 +1,4 @@
-import { LinkTile } from "~/components/primitive/link-tile";
+import { LinkTile } from "~/components/primitive/link-tile/link-tile";
 import { PageContainer } from "~/components/site/page-container";
 import { services } from "~/content/university-links";
 

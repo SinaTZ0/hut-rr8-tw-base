@@ -1,6 +1,6 @@
 import type { Route } from "./+types/complaints-and-feedback";
 
-import { Eyebrow } from "~/components/primitive/eyebrow";
+import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
 import { PageContainer } from "~/components/site/page-container";
 import { SiteFooter } from "~/components/site/site-footer";
 import { SiteHeader } from "~/components/site/site-header";
