@@ -100,18 +100,23 @@ export function ComplaintsAndFeedbackForm() {
     } catch (error) {
       const submissionError = error as NonNullable<typeof mutation.error>;
 
+      if (isDefinedError(submissionError) && submissionError.code === "INVALID_ALTCHA") {
+        challengeRef.current?.reset();
+        form.setError("altcha", { type: "server", message: submissionError.message });
+        return;
+      }
+
       if (isDefinedError(submissionError) && submissionError.code === "INVALID_INPUT") {
         const field = submissionError.data.field;
 
-        if (Object.hasOwn(emptyComplaintsAndFeedbackForm, field)) {
-          if (field === "altcha") challengeRef.current?.reset();
+        if (field !== "altcha" && Object.hasOwn(emptyComplaintsAndFeedbackForm, field)) {
           form.setError(
             field as FieldPath<ComplaintsAndFeedbackFormValues>,
             {
               type: "server",
               message: submissionError.message,
             },
-            { shouldFocus: field !== "altcha" },
+            { shouldFocus: true },
           );
           return;
         }

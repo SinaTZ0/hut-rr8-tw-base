@@ -29,6 +29,9 @@ export const complaintsAndFeedbackContract = {
         data: z.object({ field: z.string() }),
         message: "The request contains invalid values.",
       },
+      INVALID_ALTCHA: {
+        message: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است.",
+      },
     })
     .input(submitComplaintInputSchema)
     .output(submitComplaintOutputSchema),

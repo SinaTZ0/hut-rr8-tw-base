@@ -5,13 +5,13 @@ import type { Database } from "../../db/client";
 import { departmentValues, feedbackTypeValues, initialComplaintStatus } from "./complaints-and-feedback.constants";
 import type { SubmitComplaintInput } from "./complaints-and-feedback.contract";
 import { insertComplaint } from "./complaints-and-feedback.repository";
-import { verifyComplaintChallenge } from "./complaints-and-feedback.captcha.server";
 
 /*===== Submission Types =====*/
 
 type InvalidSubmission = { kind: "invalid"; field: string; message: string };
+type InvalidChallenge = { kind: "invalid_altcha"; message: string };
 
-export type ComplaintSubmissionResult = InvalidSubmission | { kind: "success"; trackingCode: string };
+export type ComplaintSubmissionResult = InvalidSubmission | InvalidChallenge | { kind: "success"; trackingCode: string };
 
 /*===== Shared Normalization =====*/
 
@@ -80,7 +80,7 @@ const submissionSchema = z.object({
 /*===== Form Validation =====*/
 
 /** Maps the first Zod issue to the service's field-specific, transport-free outcome. */
-function normalizeSubmission(input: SubmitComplaintInput) {
+function normalizeSubmission(input: Omit<SubmitComplaintInput, "altcha">) {
   const parsed = submissionSchema.safeParse(input);
   if (!parsed.success) {
     const issue = parsed.error.issues[0];
@@ -119,23 +119,18 @@ function isUniqueConstraint(error: unknown, constraint: string): boolean {
 
 /*===== Submission =====*/
 
-/** Saves one valid submission; a unique nonce makes accepted ALTCHA solutions single-use. */
+/** Saves one valid submission using a nonce verified by the procedure guard. The unique nonce makes accepted solutions single-use. */
 export async function submitComplaint({
   db,
   input,
-  hmacSecret,
+  altchaNonce,
 }: {
   db: Database;
-  input: SubmitComplaintInput;
-  hmacSecret: string;
+  input: Omit<SubmitComplaintInput, "altcha">;
+  altchaNonce: string;
 }): Promise<ComplaintSubmissionResult> {
   const normalized = normalizeSubmission(input);
   if (normalized.kind === "invalid") return normalized;
-
-  const altchaNonce = await verifyComplaintChallenge({ payload: input.altcha, hmacSecret });
-  if (!altchaNonce) {
-    return { kind: "invalid", field: "altcha", message: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است." };
-  }
 
   /*------ Insert and Rare Tracking-Code Collision ------*/
 
@@ -153,7 +148,7 @@ export async function submitComplaint({
       return { kind: "success", trackingCode: record.trackingCode };
     } catch (error) {
       if (isUniqueConstraint(error, "complaints_and_feedback_altcha_nonce_unique")) {
-        return { kind: "invalid", field: "altcha", message: "اعتبارسنجی امنیتی قبلاً استفاده شده است." };
+        return { kind: "invalid_altcha", message: "اعتبارسنجی امنیتی قبلاً استفاده شده است." };
       }
       if (!isUniqueConstraint(error, "complaints_and_feedback_tracking_code_unique") || attempt === 2) {
         throw error;

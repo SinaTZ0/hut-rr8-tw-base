@@ -4,25 +4,17 @@ import { eq } from "drizzle-orm";
 import { afterAll, afterEach, describe, expect, it } from "vitest";
 
 import { env } from "../../../config/env";
-import { createDatabase } from "../../db/client";
+import { db, dbPool } from "../../db/client.server";
 import { complaintsAndFeedbackTable } from "../../db/schema";
 import { loader as challengeLoader } from "../../routes/altcha-challenge";
 import { handleRpcRequest } from "../handler.server";
 
-/*===== Isolated Test Database =====*/
+/*===== Test Database =====*/
 
-const testDatabaseUrl = process.env.TEST_DATABASE_URL;
-if (!testDatabaseUrl) {
-  throw new Error("TEST_DATABASE_URL must point to a dedicated migrated test database.");
+if (process.env.NODE_ENV !== "test") {
+  throw new Error("Integration tests require NODE_ENV=test so requests use TEST_DATABASE_URL.");
 }
 
-const developmentUrl = new URL(env.databaseUrl);
-const testUrl = new URL(testDatabaseUrl);
-if (developmentUrl.host === testUrl.host && developmentUrl.pathname === testUrl.pathname) {
-  throw new Error("TEST_DATABASE_URL must use a different database from DATABASE_URL.");
-}
-
-const testConnection = createDatabase(testDatabaseUrl);
 const serializer = new RPCSerializer();
 const createdIds: string[] = [];
 
@@ -34,7 +26,7 @@ async function requestSubmission(input: unknown) {
     headers: { "content-type": "application/json" },
     body: JSON.stringify(serializer.serialize(input)),
   });
-  const response = await handleRpcRequest({ context: { db: testConnection.db }, request });
+  const response = await handleRpcRequest({ request });
   const body = serializer.deserialize(await response.json());
 
   return { response, body };
@@ -75,12 +67,12 @@ const validSubmission = {
 
 afterEach(async () => {
   for (const id of createdIds.splice(0)) {
-    await testConnection.db.delete(complaintsAndFeedbackTable).where(eq(complaintsAndFeedbackTable.id, id));
+    await db.delete(complaintsAndFeedbackTable).where(eq(complaintsAndFeedbackTable.id, id));
   }
 });
 
 afterAll(async () => {
-  await testConnection.pool.end();
+  await dbPool.end();
 });
 
 /*===== Complaints and Feedback Integration =====*/
@@ -106,7 +98,7 @@ describe("complaints and feedback API", () => {
       trackingCode: expect.stringMatching(/^HUT-[A-HJ-NP-Z2-9]{16}$/),
     });
 
-    const [record] = await testConnection.db
+    const [record] = await db
       .select()
       .from(complaintsAndFeedbackTable)
       .where(eq(complaintsAndFeedbackTable.trackingCode, (result.body as { trackingCode: string }).trackingCode));
@@ -129,7 +121,10 @@ describe("complaints and feedback API", () => {
 
     const replay = await requestSubmission({ ...validSubmission, altcha });
     expect(replay.response.status).toBe(422);
-    expect(replay.body).toMatchObject({ code: "INVALID_INPUT", data: { field: "altcha" } });
+    expect(replay.body).toMatchObject({
+      code: "INVALID_ALTCHA",
+      message: "اعتبارسنجی امنیتی قبلاً استفاده شده است.",
+    });
 
     /*------ A new challenge creates a different code and stores empty optional fields as null ------*/
 
@@ -147,7 +142,7 @@ describe("complaints and feedback API", () => {
     expect(secondSubmission.response.status).toBe(201);
     expect((secondSubmission.body as { trackingCode: string }).trackingCode).not.toBe(record.trackingCode);
 
-    const [secondRecord] = await testConnection.db
+    const [secondRecord] = await db
       .select()
       .from(complaintsAndFeedbackTable)
       .where(
@@ -179,7 +174,7 @@ describe("complaints and feedback API", () => {
     const accepted = await requestSubmission({ ...validSubmission, altcha });
     expect(accepted.response.status).toBe(201);
 
-    const [record] = await testConnection.db
+    const [record] = await db
       .select()
       .from(complaintsAndFeedbackTable)
       .where(eq(complaintsAndFeedbackTable.trackingCode, (accepted.body as { trackingCode: string }).trackingCode));
@@ -196,7 +191,7 @@ describe("complaints and feedback API", () => {
 
     expect(result.response.status).toBe(201);
 
-    const [record] = await testConnection.db
+    const [record] = await db
       .select()
       .from(complaintsAndFeedbackTable)
       .where(eq(complaintsAndFeedbackTable.trackingCode, (result.body as { trackingCode: string }).trackingCode));
@@ -219,10 +214,13 @@ describe("complaints and feedback API", () => {
     for (const altcha of cases) {
       const result = await requestSubmission({ ...validSubmission, altcha });
       expect(result.response.status).toBe(422);
-      expect(result.body).toMatchObject({ code: "INVALID_INPUT", data: { field: "altcha" } });
+      expect(result.body).toMatchObject({
+        code: "INVALID_ALTCHA",
+        message: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است.",
+      });
     }
 
-    const storedRows = await testConnection.db
+    const storedRows = await db
       .select()
       .from(complaintsAndFeedbackTable)
       .where(eq(complaintsAndFeedbackTable.altchaNonce, unusedNonce));
