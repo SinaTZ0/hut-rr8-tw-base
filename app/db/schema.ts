@@ -9,6 +9,9 @@ export const complaintsAndFeedbackTable = pgTable("complaints_and_feedback", {
     .unique("complaints_and_feedback_tracking_code_unique"),
   // A solved challenge can create at most one submission, even across server instances.
   altchaNonce: varchar("altcha_nonce", { length: 32 }).notNull().unique("complaints_and_feedback_altcha_nonce_unique"),
+  // Unused retry metadata remains mapped so db:push preserves existing stored columns.
+  idempotencyKey: uuid("idempotency_key").unique("complaints_and_feedback_idempotency_key_unique"),
+  submissionHash: varchar("submission_hash", { length: 64 }),
   status: varchar("status", { length: 16 }).notNull().default("pending"),
   firstName: varchar("first_name", { length: 100 }).notNull(),
   lastName: varchar("last_name", { length: 100 }),

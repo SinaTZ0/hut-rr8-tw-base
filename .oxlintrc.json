@@ -7,6 +7,8 @@
     "correctness": "error"
   },
   "rules": {
+    "complexity": ["warn", { "max": 10, "variant": "classic" }],
+    "max-depth": ["warn", { "max": 4 }],
     "react/rules-of-hooks": "error",
     "shadcn/no-restyle": [
       "error",

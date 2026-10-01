@@ -73,6 +73,17 @@ Render these options in this order:
 - Do not use placeholder text as a replacement for a visible label.
 - Keep mobile, email, student ID, and message controls left-to-right where that improves readability; keep their labels and surrounding layout right-to-left.
 
+### Submission behavior
+
+Automatic mutation retries are disabled. A successful submission returns its tracking code, and an accepted security
+challenge cannot create another submission. The browser RPC client aborts requests after 30 seconds.
+
+### Shared validation
+
+`validation.ts` owns the field rules and digit, mobile, and email normalization shared by the
+browser and service. The route adds its challenge field; the service converts empty optional values into database
+nulls. The API contract validates the request shape, and the service validates domain values.
+
 ### Recommended validation rules
 
 These are the current UI validation expectations and should be reproduced unless the new project's product requirements override them:

@@ -9,15 +9,28 @@ app/
   orpc/
     contract.ts                    # combines feature contracts
     router.ts                      # combines feature procedures
+    middleware/
+      database/
+        database.middleware.ts     # injects the database and translates database failures
+        database.errors.ts         # browser-safe public error definitions
+        database.middleware.integration.test.ts
+      altcha/
+        altcha.middleware.ts       # verifies any procedure input with an altcha field
+        altcha.errors.ts
+        altcha.middleware.integration.test.ts
     feature-name/
-      feature-name.contract.ts
-      feature-name.procedure.ts
-      feature-name.service.ts
-      feature-name.repository.ts
-      feature-name.mapper.ts       # only when a conversion is needed
-      feature-name.integration.test.ts
+      contract.ts
+      procedure.ts
+      service.ts
+      repository.ts
+      validation.ts   # field rules shared with browser consumers
+      mapper.ts       # only when a conversion is needed
+      integration.test.ts
   db/
     schema.ts
+    errors.server.ts               # availability classification at query boundaries
+  lib/
+    altcha.server.ts               # shared challenge generation and verification
   routes/
     rpc.ts                         # mounts the shared oRPC handler
 ```
@@ -51,8 +64,8 @@ relevant issue into a field-specific failure. The procedure maps that failure to
 that represent product outcomes, such as reusing an accepted challenge, are handled by the service; unexpected errors
 still propagate. This keeps transport details at the edge and makes the business path readable from top to bottom.
 
-Keep independent side effects, such as CAPTCHA verification, in focused helpers called by the service. A resource route
-may call the same feature helper when it must serve a non-oRPC protocol, such as a widget's plain JSON challenge.
+Keep shared side effects, such as CAPTCHA verification, in infrastructure helpers called by general middleware. A
+resource route may call the same helper when serving a non-oRPC protocol, such as a widget's plain JSON challenge.
 
 ## Implementing a Feature
 
@@ -77,3 +90,26 @@ checked against the feature's allowed options in one schema. Avoid duplicating t
 Some rules require a database read or a side effect rather than a schema. Check them in the service after parsing and
 return an explicit outcome. Keep the repository focused on the query or write. This separation lets another caller use
 the same service without importing oRPC, while the procedure remains responsible for the public error response.
+
+## Middleware and Database Failures
+
+Middleware in `app/orpc/middleware/` uses `os` from `@orpc/server` and imports no feature contract, service, or root
+implementer. Each middleware has its own named folder containing its implementation, errors, and integration test.
+Public error definitions live in separate browser-safe files that both middleware and feature contracts
+import directly. Each procedure chooses which middleware to apply.
+
+`verifyAltchaMiddleware` accepts any input containing `altcha: string` and injects `context.altchaNonce`. Shared
+challenge generation and verification live in `app/lib/altcha.server.ts`. A feature consumes the verified nonce
+atomically with its write to enforce its single-use policy.
+
+Feature input validation and business rules belong in the service. Procedures pass input and dependencies to the
+service and translate its outcomes into API errors. General middleware handles shared dependencies and guards.
+
+The database middleware injects
+the database and maps `DatabaseUnavailableError` to the declared API error. Repositories use
+`withDatabaseAvailability` around individual queries, so a network failure from another dependency is not mistakenly
+classified as a database outage. Constraint failures remain available to the service for domain decisions.
+
+The database factory bounds pool acquisition to 5 seconds and statements to 10 seconds. The driver query deadline is
+15 seconds, allowing PostgreSQL to cancel first. A pool error listener handles idle connection failures and logs only
+their diagnostic code. These limits apply to each operation rather than the entire request.

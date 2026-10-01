@@ -1,4 +1,4 @@
-import { complaintsAndFeedbackContract } from "./complaints-and-feedback/complaints-and-feedback.contract";
+import { complaintsAndFeedbackContract } from "./complaints-and-feedback/contract";
 
 /*===== API Contract =====*/
 

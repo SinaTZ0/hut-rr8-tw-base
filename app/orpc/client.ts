@@ -1,5 +1,6 @@
 import { createORPCClient } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
+import { TimeoutLinkPlugin } from "@orpc/client/plugins";
 import type { RouterContractClient } from "@orpc/contract";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 
@@ -7,7 +8,10 @@ import { contract } from "./contract";
 
 /*===== Browser RPC Client =====*/
 
-const rpcLink = new RPCLink({ url: "/rpc" });
+const rpcLink = new RPCLink({
+  url: "/rpc",
+  plugins: [new TimeoutLinkPlugin({ timeout: 30_000 })],
+});
 
 export const rpcClient: RouterContractClient<typeof contract> = createORPCClient(rpcLink);
 

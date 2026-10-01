@@ -29,7 +29,7 @@ const payloadSchema = z.object({
 
 /*===== Challenge Generation =====*/
 
-export function createComplaintChallenge(hmacSecret: string) {
+export function createAltchaChallenge(hmacSecret: string) {
   return createChallenge({
     algorithm: "SHA-256",
     cost: 1,
@@ -43,7 +43,7 @@ export function createComplaintChallenge(hmacSecret: string) {
 /*===== Solution Verification =====*/
 
 /** Returns the signed challenge nonce only after a valid, unexpired solution. */
-export async function verifyComplaintChallenge({
+export async function verifyAltchaChallenge({
   payload,
   hmacSecret,
 }: {

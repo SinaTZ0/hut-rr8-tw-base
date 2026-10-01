@@ -1,6 +1,7 @@
 import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 import type { Database } from "../../db/client";
+import { withDatabaseAvailability } from "../../db/errors.server";
 import { complaintsAndFeedbackTable } from "../../db/schema";
 
 /*===== Persistence Types =====*/
@@ -17,7 +18,9 @@ export async function insertComplaint({
   db: Database;
   values: NewComplaintRecord;
 }): Promise<ComplaintRecord> {
-  const [record] = await db.insert(complaintsAndFeedbackTable).values(values).returning();
+  const [record] = await withDatabaseAvailability(() =>
+    db.insert(complaintsAndFeedbackTable).values(values).returning(),
+  );
 
   if (!record) {
     throw new Error("The complaint could not be created.");

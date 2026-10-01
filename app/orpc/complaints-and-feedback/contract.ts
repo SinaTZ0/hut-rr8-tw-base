@@ -1,6 +1,9 @@
 import { oc } from "@orpc/contract";
 import { z } from "zod";
 
+import { altchaErrors } from "../middleware/altcha/altcha.errors";
+import { databaseErrors } from "../middleware/database/database.errors";
+
 /*===== Submission Schemas =====*/
 
 const submitComplaintInputSchema = z.strictObject({
@@ -25,12 +28,11 @@ const submitComplaintOutputSchema = z.object({
 export const complaintsAndFeedbackContract = {
   submit: oc
     .errors({
+      ...databaseErrors,
+      ...altchaErrors,
       INVALID_INPUT: {
         data: z.object({ field: z.string() }),
         message: "The request contains invalid values.",
-      },
-      INVALID_ALTCHA: {
-        message: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است.",
       },
     })
     .input(submitComplaintInputSchema)

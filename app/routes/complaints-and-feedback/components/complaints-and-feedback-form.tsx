@@ -13,7 +13,7 @@ import { NativeSelect, NativeSelectOption } from "~/components/primitive/native-
 import { Textarea } from "~/components/primitive/textarea/textarea";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { orpc } from "~/orpc/client";
-import { departmentValues, feedbackTypeValues } from "~/orpc/complaints-and-feedback/complaints-and-feedback.constants";
+import { departmentValues, feedbackTypeValues } from "~/orpc/complaints-and-feedback/constants";
 
 import {
   complaintsAndFeedbackFormSchema,
@@ -24,6 +24,13 @@ import { SecurityChallenge, type SecurityChallengeHandle } from "./security-chal
 import { SubmissionSuccess } from "./submission-success";
 
 /*===== Field Presentation =====*/
+
+function getFieldErrorProps({ id, error }: { id: string; error?: ReactHookFormFieldError }) {
+  return {
+    "aria-invalid": Boolean(error),
+    "aria-describedby": error ? `${id}-error` : undefined,
+  };
+}
 
 function RequiredMarker() {
   return (
@@ -91,6 +98,44 @@ export function ComplaintsAndFeedbackForm() {
     [challenge.field, form],
   );
 
+  /*------ Server Error Handling ------*/
+
+  function handleSubmissionError(submissionError: NonNullable<typeof mutation.error>) {
+    if (isDefinedError(submissionError)) {
+      switch (submissionError.code) {
+        case "INVALID_ALTCHA":
+          challengeRef.current?.reset();
+          form.setError("altcha", { type: "server", message: submissionError.message });
+          return;
+
+        case "INVALID_INPUT": {
+          const field = submissionError.data.field;
+
+          if (field !== "altcha" && Object.hasOwn(emptyComplaintsAndFeedbackForm, field)) {
+            form.setError(
+              field as FieldPath<ComplaintsAndFeedbackFormValues>,
+              {
+                type: "server",
+                message: submissionError.message,
+              },
+              { shouldFocus: true },
+            );
+            return;
+          }
+          break;
+        }
+
+        case "DATABASE_UNAVAILABLE":
+          setFormError(submissionError.message);
+          return;
+      }
+    }
+
+    setFormError("ارسال پیام انجام نشد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.");
+  }
+
+  /*------ Submission Lifecycle ------*/
+
   async function submit(values: ComplaintsAndFeedbackFormValues) {
     if (mutation.isPending) return;
     setFormError(null);
@@ -98,31 +143,7 @@ export function ComplaintsAndFeedbackForm() {
     try {
       await mutation.mutateAsync(values);
     } catch (error) {
-      const submissionError = error as NonNullable<typeof mutation.error>;
-
-      if (isDefinedError(submissionError) && submissionError.code === "INVALID_ALTCHA") {
-        challengeRef.current?.reset();
-        form.setError("altcha", { type: "server", message: submissionError.message });
-        return;
-      }
-
-      if (isDefinedError(submissionError) && submissionError.code === "INVALID_INPUT") {
-        const field = submissionError.data.field;
-
-        if (field !== "altcha" && Object.hasOwn(emptyComplaintsAndFeedbackForm, field)) {
-          form.setError(
-            field as FieldPath<ComplaintsAndFeedbackFormValues>,
-            {
-              type: "server",
-              message: submissionError.message,
-            },
-            { shouldFocus: true },
-          );
-          return;
-        }
-      }
-
-      setFormError("ارسال پیام انجام نشد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.");
+      handleSubmissionError(error as NonNullable<typeof mutation.error>);
     }
   }
 
@@ -158,8 +179,7 @@ export function ComplaintsAndFeedbackForm() {
                   id="firstName"
                   required
                   autoComplete="given-name"
-                  aria-invalid={Boolean(errors.firstName)}
-                  aria-describedby={errors.firstName ? "firstName-error" : undefined}
+                  {...getFieldErrorProps({ id: "firstName", error: errors.firstName })}
                   {...form.register("firstName")}
                 />
               </FormField>
@@ -168,8 +188,7 @@ export function ComplaintsAndFeedbackForm() {
                 <Input
                   id="lastName"
                   autoComplete="family-name"
-                  aria-invalid={Boolean(errors.lastName)}
-                  aria-describedby={errors.lastName ? "lastName-error" : undefined}
+                  {...getFieldErrorProps({ id: "lastName", error: errors.lastName })}
                   {...form.register("lastName")}
                 />
               </FormField>
@@ -182,8 +201,7 @@ export function ComplaintsAndFeedbackForm() {
                   dir="ltr"
                   autoComplete="tel"
                   placeholder="۰۹۱۲۱۲۳۴۵۶۷"
-                  aria-invalid={Boolean(errors.mobile)}
-                  aria-describedby={errors.mobile ? "mobile-error" : undefined}
+                  {...getFieldErrorProps({ id: "mobile", error: errors.mobile })}
                   {...form.register("mobile")}
                 />
               </FormField>
@@ -195,8 +213,7 @@ export function ComplaintsAndFeedbackForm() {
                   dir="ltr"
                   autoComplete="email"
                   placeholder="example@hut.ac.ir"
-                  aria-invalid={Boolean(errors.email)}
-                  aria-describedby={errors.email ? "email-error" : undefined}
+                  {...getFieldErrorProps({ id: "email", error: errors.email })}
                   {...form.register("email")}
                 />
               </FormField>
@@ -207,8 +224,7 @@ export function ComplaintsAndFeedbackForm() {
                   type="text"
                   inputMode="numeric"
                   dir="ltr"
-                  aria-invalid={Boolean(errors.studentId)}
-                  aria-describedby={errors.studentId ? "studentId-error" : undefined}
+                  {...getFieldErrorProps({ id: "studentId", error: errors.studentId })}
                   {...form.register("studentId")}
                 />
               </FormField>
@@ -218,8 +234,7 @@ export function ComplaintsAndFeedbackForm() {
                   id="feedbackType"
                   required
                   className="w-full"
-                  aria-invalid={Boolean(errors.feedbackType)}
-                  aria-describedby={errors.feedbackType ? "feedbackType-error" : undefined}
+                  {...getFieldErrorProps({ id: "feedbackType", error: errors.feedbackType })}
                   {...form.register("feedbackType")}
                 >
                   <NativeSelectOption value="">انتخاب کنید</NativeSelectOption>
@@ -241,8 +256,7 @@ export function ComplaintsAndFeedbackForm() {
                   id="department"
                   required
                   className="w-full"
-                  aria-invalid={Boolean(errors.department)}
-                  aria-describedby={errors.department ? "department-error" : undefined}
+                  {...getFieldErrorProps({ id: "department", error: errors.department })}
                   {...form.register("department")}
                 >
                   <NativeSelectOption value="">انتخاب کنید</NativeSelectOption>
@@ -261,8 +275,7 @@ export function ComplaintsAndFeedbackForm() {
                   rows={7}
                   dir="auto"
                   placeholder="شکایت، پیشنهاد یا انتقاد خود را بنویسید…"
-                  aria-invalid={Boolean(errors.message)}
-                  aria-describedby={errors.message ? "message-error" : undefined}
+                  {...getFieldErrorProps({ id: "message", error: errors.message })}
                   {...form.register("message")}
                 />
               </FormField>

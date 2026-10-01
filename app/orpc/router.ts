@@ -1,4 +1,4 @@
-import { submitComplaintProcedure } from "./complaints-and-feedback/complaints-and-feedback.procedure";
+import { submitComplaintProcedure } from "./complaints-and-feedback/procedure";
 import { os } from "./implementer.server";
 
 /*===== API Router =====*/

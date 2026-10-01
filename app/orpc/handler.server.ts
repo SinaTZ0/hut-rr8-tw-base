@@ -11,6 +11,7 @@ export const rpcHandler = new RPCHandler(router, {
     BAD_REQUEST: 422,
     INVALID_INPUT: 422,
     INVALID_ALTCHA: 422,
+    DATABASE_UNAVAILABLE: 503,
   },
   outputStatus: (_output, _procedure, path) => (path.join(".") === "complaintsAndFeedback.submit" ? 201 : undefined),
 });

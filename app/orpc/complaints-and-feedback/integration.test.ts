@@ -90,7 +90,8 @@ describe("complaints and feedback API", () => {
     });
 
     const altcha = await getSolvedPayload(challenge);
-    const result = await requestSubmission({ ...validSubmission, altcha });
+    const submission = { ...validSubmission, altcha };
+    const result = await requestSubmission(submission);
 
     expect(result.response.status).toBe(201);
     expect(result.body).toMatchObject({
@@ -119,7 +120,7 @@ describe("complaints and feedback API", () => {
 
     /*------ The accepted challenge is single-use ------*/
 
-    const replay = await requestSubmission({ ...validSubmission, altcha });
+    const replay = await requestSubmission(submission);
     expect(replay.response.status).toBe(422);
     expect(replay.body).toMatchObject({
       code: "INVALID_ALTCHA",
