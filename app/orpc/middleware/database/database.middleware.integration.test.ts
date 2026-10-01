@@ -7,6 +7,7 @@ import { z } from "zod";
 import { databaseErrors } from "./database.errors";
 import { injectDatabaseMiddleware } from "./database.middleware";
 import { errorDataSchema } from "../../errors";
+import { logger } from "../logging/logging.middleware";
 
 /*===== Isolated RPC Dependencies =====*/
 
@@ -82,7 +83,7 @@ describe("database middleware", () => {
     ["PostgreSQL statement timeout", "57014"],
   ])("returns a typed 503 for %s", async (_description, code) => {
     state.failure = new Error("Query failed", { cause: Object.assign(new Error("private driver detail"), { code }) });
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const log = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = await requestSubmission();
 
@@ -94,24 +95,28 @@ describe("database middleware", () => {
     });
     expect(JSON.stringify(result.body)).not.toContain("private driver detail");
     expect(log).toHaveBeenCalledTimes(1);
-    expect(log).toHaveBeenCalledWith("RPC server error", {
-      path: "complaintsAndFeedback.submit",
-      code: "DATABASE_UNAVAILABLE",
-      errorId: expect.any(String),
-      cause: expect.any(ORPCError),
-    });
+    expect(log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: "complaintsAndFeedback.submit",
+        code: "DATABASE_UNAVAILABLE",
+        requestId: expect.any(String),
+        err: expect.any(ORPCError),
+      }),
+      "RPC completed",
+    );
     const data = errorDataSchema.parse((result.body as { data: unknown }).data);
     expect(data.fields).toEqual({});
     expect(data.errors).toMatchObject({
       "Database failure code": code,
       "Error code": "DATABASE_UNAVAILABLE",
       Procedure: "complaintsAndFeedback.submit",
-      "Error ID": log.mock.calls[0][1].errorId,
+      "Error ID": expect.any(String),
     });
+    expect(log).toHaveBeenCalledWith(expect.objectContaining({ requestId: data.errors["Error ID"] }), "RPC completed");
   });
 
   it("passes unrelated errors and constraint failures through", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const log = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     for (const failure of [new Error("unrelated"), Object.assign(new Error("unique"), { code: "23505" })]) {
       state.failure = failure;
@@ -144,7 +149,7 @@ describe("database middleware", () => {
   it("does not classify network failures outside a database operation", async () => {
     state.fromDatabase = false;
     state.failure = Object.assign(new Error("external service failed"), { code: "ECONNREFUSED" });
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const log = vi.spyOn(logger, "error").mockImplementation(() => {});
     const result = await requestSubmission();
     expect(result.status).toBe(500);
     expect(result.body).toMatchObject({ code: "INTERNAL_SERVER_ERROR" });
@@ -157,14 +162,14 @@ describe("database middleware", () => {
     "Query read timeout",
   ])("returns a typed 503 for the pg timer: %s", async (message) => {
     state.failure = new Error("Query failed", { cause: new Error(message) });
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(logger, "error").mockImplementation(() => {});
     const result = await requestSubmission();
     expect(result.status).toBe(503);
     expect(result.body).toMatchObject({ code: "DATABASE_UNAVAILABLE" });
   });
 
   it("does not loop on a cyclic cause chain", async () => {
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(logger, "error").mockImplementation(() => {});
     const failure = new Error("cyclic") as Error & { cause: unknown };
     failure.cause = failure;
     state.failure = failure;

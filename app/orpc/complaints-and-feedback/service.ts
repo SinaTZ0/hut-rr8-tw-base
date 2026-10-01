@@ -1,6 +1,7 @@
 import { randomInt } from "node:crypto";
 
 import type { Database } from "../../db/client";
+import type { Measure } from "../../lib/request-timing.server";
 import { initialComplaintStatus } from "./constants";
 import type { SubmitComplaintInput } from "./contract";
 import { insertComplaint } from "./repository";
@@ -85,37 +86,46 @@ export async function submitComplaint({
   db,
   input,
   altchaNonce,
+  measure,
 }: {
   db: Database;
   input: Omit<SubmitComplaintInput, "altcha">;
   altchaNonce: string;
+  measure: Measure;
 }): Promise<ComplaintSubmissionResult> {
-  const normalized = normalizeSubmission(input);
-  if (normalized.kind === "invalid") return normalized;
+  return measure({
+    layer: "service",
+    name: "submitComplaint",
+    run: async () => {
+      const normalized = normalizeSubmission(input);
+      if (normalized.kind === "invalid") return normalized;
 
-  /*------ Insert and Rare Tracking-Code Collision ------*/
+      /*------ Insert and Rare Tracking-Code Collision ------*/
 
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    try {
-      const record = await insertComplaint({
-        db,
-        values: {
-          ...normalized.values,
-          altchaNonce,
-          status: initialComplaintStatus,
-          trackingCode: createTrackingCode(),
-        },
-      });
-      return { kind: "success", trackingCode: record.trackingCode };
-    } catch (error) {
-      if (isUniqueConstraint(error, "complaints_and_feedback_altcha_nonce_unique")) {
-        return { kind: "invalid_altcha", message: "اعتبارسنجی امنیتی قبلاً استفاده شده است." };
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const record = await insertComplaint({
+            db,
+            measure,
+            values: {
+              ...normalized.values,
+              altchaNonce,
+              status: initialComplaintStatus,
+              trackingCode: createTrackingCode(),
+            },
+          });
+          return { kind: "success", trackingCode: record.trackingCode };
+        } catch (error) {
+          if (isUniqueConstraint(error, "complaints_and_feedback_altcha_nonce_unique")) {
+            return { kind: "invalid_altcha", message: "اعتبارسنجی امنیتی قبلاً استفاده شده است." };
+          }
+          if (!isUniqueConstraint(error, "complaints_and_feedback_tracking_code_unique") || attempt === 2) {
+            throw error;
+          }
+        }
       }
-      if (!isUniqueConstraint(error, "complaints_and_feedback_tracking_code_unique") || attempt === 2) {
-        throw error;
-      }
-    }
-  }
 
-  throw new Error("A tracking code could not be allocated.");
+      throw new Error("A tracking code could not be allocated.");
+    },
+  });
 }

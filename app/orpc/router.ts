@@ -1,11 +1,10 @@
 import { submitComplaintProcedure } from "./complaints-and-feedback/procedure";
-import { os } from "./implementer.server";
-import { standardizeErrorsMiddleware } from "./middleware/errors/errors.middleware";
+import { api } from "./implementer.server";
 
 /*===== API Router =====*/
 
-// Router middleware wraps every procedure before input validation and feature middleware.
-export const router = os.use(standardizeErrorsMiddleware).router({
+// Procedures already carry shared middleware; the undecorated builder avoids running it twice.
+export const router = api.router({
   complaintsAndFeedback: {
     submit: submitComplaintProcedure,
   },

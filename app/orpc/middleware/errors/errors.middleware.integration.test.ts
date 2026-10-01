@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { commonErrors, errorDataSchema } from "../../errors";
+import { logger, loggingMiddleware } from "../logging/logging.middleware";
 import { standardizeErrorsMiddleware } from "./errors.middleware";
 
 /*===== Independent Contract Fixture =====*/
@@ -17,7 +18,7 @@ const contract = {
 const api = implement(contract);
 
 function withErrorMiddleware(procedure: ReturnType<typeof api.check.handler>) {
-  return api.use(standardizeErrorsMiddleware).router({ check: procedure }).check;
+  return api.use(loggingMiddleware).use(standardizeErrorsMiddleware).router({ check: procedure }).check;
 }
 
 async function callFailure(failure: unknown) {
@@ -40,12 +41,16 @@ describe("standard RPC error data", () => {
     expect(errorDataSchema.safeParse({ errors: { Failure: 42 }, fields: {} }).success).toBe(false);
   });
 
-  it("preserves field-only errors without general diagnostics or logging", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  it("preserves field-only errors without general diagnostics and logs a warning", async () => {
+    const log = vi.spyOn(logger, "warn").mockImplementation(() => {});
     const data = { errors: {}, fields: { name: "نام الزامی است.", email: "ایمیل معتبر نیست." } };
     const result = await callFailure(new ORPCError("INVALID_INPUT", { data }));
     expect(result.data).toEqual(data);
-    expect(log).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledOnce();
+    expect(log).toHaveBeenCalledWith(
+      expect.objectContaining({ code: "INVALID_INPUT", outcome: "error" }),
+      "RPC completed",
+    );
   });
 
   it("keeps technical diagnostics and field errors together", async () => {
@@ -80,23 +85,26 @@ describe("standard RPC error data", () => {
   });
 
   it("correlates unexpected failures with one private log", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const log = vi.spyOn(logger, "error").mockImplementation(() => {});
     const failure = new Error("private SQL, credentials, and submitted values");
     const normalized = await callFailure(failure);
     expect(normalized).toMatchObject({ code: "INTERNAL_SERVER_ERROR", defined: true });
     expect(normalized.data.errors["Error ID"]).toEqual(expect.any(String));
     expect(JSON.stringify(normalized)).not.toContain(failure.message);
     expect(log).toHaveBeenCalledTimes(1);
-    expect(log).toHaveBeenCalledWith("RPC server error", {
-      code: "INTERNAL_SERVER_ERROR",
-      path: "check",
-      errorId: normalized.data.errors["Error ID"],
-      cause: failure,
-    });
+    expect(log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: "INTERNAL_SERVER_ERROR",
+        path: "check",
+        requestId: normalized.data.errors["Error ID"],
+        err: failure,
+      }),
+      "RPC completed",
+    );
   });
 
   it("normalizes output-validation failures without exposing output values", async () => {
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(logger, "error").mockImplementation(() => {});
     const procedure = withErrorMiddleware(api.check.handler(() => ({ private: "secret" }) as never));
     const error = await call(procedure, { name: "علی", email: "example@hut.ac.ir" }).catch((error) => error);
     expect(error).toMatchObject({ code: "INTERNAL_SERVER_ERROR", defined: true });
@@ -105,15 +113,15 @@ describe("standard RPC error data", () => {
   });
 
   it("keeps explicit internal-error messages in server logs", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const log = vi.spyOn(logger, "error").mockImplementation(() => {});
     const failure = new ORPCError("INTERNAL_SERVER_ERROR", { message: "private database connection string" });
     const normalized = await callFailure(failure);
     expect(JSON.stringify(normalized)).not.toContain(failure.message);
-    expect(log.mock.calls[0][1].cause).toBe(failure);
+    expect(log).toHaveBeenCalledWith(expect.objectContaining({ err: failure }), "RPC completed");
   });
 
   it("catches feature middleware failures before the handler", async () => {
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const log = vi.spyOn(logger, "error").mockImplementation(() => {});
     const failure = new Error("private middleware failure");
     const handler = vi.fn(() => "ok");
     const featureMiddleware = os.middleware(async () => {

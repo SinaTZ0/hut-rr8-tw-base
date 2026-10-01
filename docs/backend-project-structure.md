@@ -98,6 +98,25 @@ the same service without importing oRPC, while the procedure remains responsible
 
 ## Middleware and Database Failures
 
+The shared contract implementer applies logging first, then error normalization, before validation and feature
+middleware. Assemble the router with its undecorated `api` builder; using `os.router` would apply shared middleware
+again. The logging middleware writes one Pino JSON completion log for each RPC call: successes at `info`, client
+rejections at `warn`, and server failures at `error`. The request ID also becomes the public server-error ID.
+
+Completion logs contain total RPC execution time in `durationMs` and named `timings` entries for procedure, service,
+and repository operations. These are inclusive elapsed milliseconds, so parent durations include child operations.
+The procedure handler, `submitComplaint`, and `insertComplaint` pass the request's `measure` dependency explicitly;
+the timer records failures and each retry in `finally`. Layers that do not execute have no entries. Total RPC timing
+includes validation, guards, and error normalization, but excludes HTTP decoding and response serialization.
+Request and response payloads are not explicitly added to completion logs. The private error serializer keeps original
+messages, SQL, query parameters, PostgreSQL detail, and structured driver diagnostics from a bounded,
+cycle-safe cause chain. Database exceptions can therefore include submitted values in server logs; these details
+are intentionally retained for debugging. A single top-level `stack` uses the deepest cause that retains
+application frames, falling back to the first available stack. Frames from `node_modules` and Node internals are
+omitted; complete error headers are retained. Nested causes keep messages and structured diagnostics without
+repeated stacks. Arbitrary error properties are omitted, and server exception details remain excluded from
+public error responses.
+
 Middleware in `app/orpc/middleware/` uses `os` from `@orpc/server` and imports no feature contract, service, or root
 implementer. Each middleware has its own named folder containing its implementation, errors, and integration test.
 Public error definitions live in separate browser-safe files that both middleware and feature contracts

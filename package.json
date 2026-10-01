@@ -37,6 +37,7 @@
     "isbot": "^5.2.2",
     "lucide-react": "^1.48.0",
     "pg": "^8.23.0",
+    "pino": "^10.3.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-hook-form": "^7.89.0",
