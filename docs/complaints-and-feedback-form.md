@@ -96,11 +96,15 @@ Server failures include the RPC code, procedure, debugging guidance, and an erro
 server logs. Database failures additionally include a recognized availability code. Raw exceptions,
 stack traces, database queries, and submitted values are not automatically returned to the browser.
 
-### Shared validation
+### Validation ownership
 
-`validation.ts` owns the field rules and digit, mobile, and email normalization shared by the
-browser and service. The route adds its challenge field; the service converts empty optional values into database
-nulls. The API contract validates the request shape, and the service validates domain values.
+The route's `schema.ts` owns browser field validation, Persian messages, normalization, and the challenge field.
+The service's `validation.ts` independently owns domain field validation and normalization; the service converts
+empty optional values into database nulls. The API contract validates the request shape.
+
+Form and service schemas remain separate even when their current rules match, so each can evolve without
+schema overrides or conditional rules for the other consumer. Rules that must agree across both boundaries
+must be updated deliberately in both places. Allowed department and feedback-type constants remain shared.
 
 ### Recommended validation rules
 

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { departmentValues, feedbackTypeValues } from "./constants";
 
-/*===== Shared Normalization =====*/
+/*===== Service Normalization =====*/
 
 function normalizeDigits(value: string) {
   return value
@@ -15,7 +15,7 @@ function normalizeMobile(value: string) {
   return digits.startsWith("+98") ? `0${digits.slice(3)}` : digits;
 }
 
-/*===== Browser and Service Field Rules =====*/
+/*===== Service Field Rules =====*/
 
 // Empty optional fields stay strings here; only the service converts them to database nulls.
 export const complaintFieldsSchema = z.strictObject({

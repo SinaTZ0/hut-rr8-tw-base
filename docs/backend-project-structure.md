@@ -23,7 +23,7 @@ app/
       procedure.ts
       service.ts
       repository.ts
-      validation.ts   # field rules shared with browser consumers
+      validation.ts   # service-owned domain validation and normalization
       mapper.ts       # only when a conversion is needed
       integration.test.ts
   db/
@@ -86,6 +86,11 @@ service schema checks what those values mean for this feature. Use Zod's `trim`,
 `email`, `enum`, and `pipe` where they make normalization and validation clearer than manual branches. For example,
 optional blank text can become `null`, Persian and Arabic digits can become ASCII digits, and a select value can be
 checked against the feature's allowed options in one schema. Avoid duplicating those rules in the contract.
+
+Browser forms own separate schemas in their route slices. Do not derive a form schema from service validation,
+even when their current rules match. Intentional duplication lets form behavior and domain validation evolve
+independently; update both explicitly when a requirement applies to both. Browser-safe option constants may
+remain shared.
 
 Some rules require a database read or a side effect rather than a schema. Check them in the service after parsing and
 return an explicit outcome. Keep the repository focused on the query or write. This separation lets another caller use
