@@ -78,6 +78,24 @@ Render these options in this order:
 Automatic mutation retries are disabled. A successful submission returns its tracking code, and an accepted security
 challenge cannot create another submission. The browser RPC client aborts requests after 30 seconds.
 
+### RPC error data
+
+Every procedure error uses `data: { errors: Record<string, string>, fields: Record<string, string> }`.
+The outermost router middleware standardizes input/output validation errors, feature middleware failures,
+and handler exceptions. Malformed HTTP bodies are handled by oRPC before procedure middleware runs;
+the form uses its general fallback message when a response has no standardized data.
+The `fields` map contains field names and Persian validation messages, including `altcha` for security
+challenge errors. Domain validation returns all invalid fields, keeping the first message for each field.
+
+The `errors` map contains diagnostic titles and technical messages. When populated, the form shows a
+general Persian destructive alert containing a collapsed technical-details accordion with a button to copy this map as JSON.
+Field errors and technical diagnostics display independently, including together when both maps have entries.
+Retries clear prior diagnostics; failures preserve entered form values.
+
+Server failures include the RPC code, procedure, debugging guidance, and an error ID correlated with
+server logs. Database failures additionally include a recognized availability code. Raw exceptions,
+stack traces, database queries, and submitted values are not automatically returned to the browser.
+
 ### Shared validation
 
 `validation.ts` owns the field rules and digit, mobile, and email normalization shared by the

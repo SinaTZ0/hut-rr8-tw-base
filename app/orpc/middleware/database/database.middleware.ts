@@ -6,14 +6,22 @@ import { databaseErrors } from "./database.errors";
 
 /*===== Database Context =====*/
 
-export const injectDatabaseMiddleware = os.errors(databaseErrors).middleware(async ({ errors, next, path }) => {
+export const injectDatabaseMiddleware = os.errors(databaseErrors).middleware(async ({ errors, next }) => {
   try {
     return await next({ context: { db } });
   } catch (error) {
     if (!(error instanceof DatabaseUnavailableError)) throw error;
 
-    // The client receives a stable explanation; the server retains the diagnostic code and cause.
-    console.error("Database unavailable", { path: path.join("."), code: error.code });
-    throw errors.DATABASE_UNAVAILABLE({ cause: error });
+    throw errors.DATABASE_UNAVAILABLE({
+      data: {
+        errors: {
+          "Database failure code": error.code,
+          "Database availability":
+            "PostgreSQL is unavailable or timed out. Check database service health, connection limits, network access, and timeout settings.",
+        },
+        fields: {},
+      },
+      cause: error,
+    });
   }
 });

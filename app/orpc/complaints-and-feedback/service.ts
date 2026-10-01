@@ -8,7 +8,7 @@ import { complaintFieldsSchema } from "./validation";
 
 /*===== Submission Types =====*/
 
-type InvalidSubmission = { kind: "invalid"; field: string; message: string };
+type InvalidSubmission = { kind: "invalid"; fields: Record<string, string> };
 type InvalidChallenge = { kind: "invalid_altcha"; message: string };
 
 export type ComplaintSubmissionResult =
@@ -26,7 +26,7 @@ const submissionSchema = complaintFieldsSchema.transform((values) => ({
 
 /*===== Form Validation =====*/
 
-/** Maps the first Zod issue to the service's field-specific, transport-free outcome. */
+/** Collects every invalid field, retaining its first actionable validation message. */
 function normalizeSubmission(input: Omit<SubmitComplaintInput, "altcha">) {
   const parsed = submissionSchema.safeParse({
     ...input,
@@ -36,11 +36,14 @@ function normalizeSubmission(input: Omit<SubmitComplaintInput, "altcha">) {
     studentId: input.studentId ?? "",
   });
   if (!parsed.success) {
-    const issue = parsed.error.issues[0];
+    const fields: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const field = String(issue.path[0]);
+      if (!Object.hasOwn(fields, field)) fields[field] = issue.message;
+    }
     return {
       kind: "invalid" as const,
-      field: String(issue.path[0] ?? "form"),
-      message: issue.message,
+      fields,
     };
   }
 

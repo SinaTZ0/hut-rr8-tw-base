@@ -11,6 +11,10 @@ export const verifyAltchaMiddleware = os
   .errors(altchaErrors)
   .middleware(async ({ errors, next }, input: { altcha: string }) => {
     const altchaNonce = await verifyAltchaChallenge({ payload: input.altcha, hmacSecret: env.altchaHmacSecret });
-    if (!altchaNonce) throw errors.INVALID_ALTCHA();
+    if (!altchaNonce) {
+      throw errors.INVALID_ALTCHA({
+        data: { errors: {}, fields: { altcha: altchaErrors.INVALID_ALTCHA.message } },
+      });
+    }
     return next({ context: { altchaNonce } });
   });

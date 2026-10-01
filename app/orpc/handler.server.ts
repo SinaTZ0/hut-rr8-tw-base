@@ -1,18 +1,12 @@
-import { COMMON_ERROR_STATUS_MAP } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 
+import { rpcErrorStatusMap } from "./errors";
 import { router } from "./router";
 
 /*===== RPC Handler =====*/
 
 export const rpcHandler = new RPCHandler(router, {
-  errorStatusMap: {
-    ...COMMON_ERROR_STATUS_MAP,
-    BAD_REQUEST: 422,
-    INVALID_INPUT: 422,
-    INVALID_ALTCHA: 422,
-    DATABASE_UNAVAILABLE: 503,
-  },
+  errorStatusMap: rpcErrorStatusMap,
   outputStatus: (_output, _procedure, path) => (path.join(".") === "complaintsAndFeedback.submit" ? 201 : undefined),
 });
 

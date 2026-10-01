@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { databaseErrors } from "./database.errors";
 import { injectDatabaseMiddleware } from "./database.middleware";
+import { errorDataSchema } from "../../errors";
 
 /*===== Isolated RPC Dependencies =====*/
 
@@ -13,8 +14,7 @@ const state = vi.hoisted(() => ({ failure: undefined as unknown, fromDatabase: t
 
 vi.mock("../../../db/client.server", () => ({ db: state.database }));
 vi.mock("../../complaints-and-feedback/service", async (importOriginal) => {
-  const original =
-    await importOriginal<typeof import("../../complaints-and-feedback/service")>();
+  const original = await importOriginal<typeof import("../../complaints-and-feedback/service")>();
   const { withDatabaseAvailability } = await import("../../../db/errors.server");
   return {
     ...original,
@@ -93,9 +93,20 @@ describe("database middleware", () => {
       message: databaseErrors.DATABASE_UNAVAILABLE.message,
     });
     expect(JSON.stringify(result.body)).not.toContain("private driver detail");
-    expect(log).toHaveBeenCalledWith("Database unavailable", {
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith("RPC server error", {
       path: "complaintsAndFeedback.submit",
-      code,
+      code: "DATABASE_UNAVAILABLE",
+      errorId: expect.any(String),
+      cause: expect.any(ORPCError),
+    });
+    const data = errorDataSchema.parse((result.body as { data: unknown }).data);
+    expect(data.fields).toEqual({});
+    expect(data.errors).toMatchObject({
+      "Database failure code": code,
+      "Error code": "DATABASE_UNAVAILABLE",
+      Procedure: "complaintsAndFeedback.submit",
+      "Error ID": log.mock.calls[0][1].errorId,
     });
   });
 
@@ -109,20 +120,25 @@ describe("database middleware", () => {
       expect(result.body).toMatchObject({ code: "INTERNAL_SERVER_ERROR" });
     }
 
-    expect(log).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledTimes(2);
   });
 
   it("preserves an existing oRPC error even when its cause has a network code", async () => {
     state.fromDatabase = false;
     state.failure = new ORPCError("INVALID_ALTCHA", {
       message: "The challenge is invalid.",
+      data: { errors: {}, fields: { altcha: "The challenge is invalid." } },
       cause: Object.assign(new Error("connection refused"), { code: "ECONNREFUSED" }),
     });
 
     const result = await requestSubmission();
 
     expect(result.status).toBe(422);
-    expect(result.body).toMatchObject({ code: "INVALID_ALTCHA", message: "The challenge is invalid." });
+    expect(result.body).toMatchObject({
+      code: "INVALID_ALTCHA",
+      message: "The challenge is invalid.",
+      data: { errors: {}, fields: { altcha: "The challenge is invalid." } },
+    });
   });
 
   it("does not classify network failures outside a database operation", async () => {
@@ -132,7 +148,7 @@ describe("database middleware", () => {
     const result = await requestSubmission();
     expect(result.status).toBe(500);
     expect(result.body).toMatchObject({ code: "INTERNAL_SERVER_ERROR" });
-    expect(log).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledTimes(1);
   });
 
   it.each([
@@ -148,6 +164,7 @@ describe("database middleware", () => {
   });
 
   it("does not loop on a cyclic cause chain", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const failure = new Error("cyclic") as Error & { cause: unknown };
     failure.cause = failure;
     state.failure = failure;
@@ -156,5 +173,19 @@ describe("database middleware", () => {
 
     expect(result.status).toBe(500);
     expect(result.body).toMatchObject({ code: "INTERNAL_SERVER_ERROR" });
+  });
+
+  it("leaves malformed HTTP payloads to the RPC handler", async () => {
+    const response = await handleRpcRequest({
+      request: new Request("http://localhost/rpc/complaintsAndFeedback/submit", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{invalid JSON",
+      }),
+    });
+    expect(response.status).toBe(422);
+    const body = serializer.deserialize(await response.json()) as { code: string; defined: boolean; data: unknown };
+    expect(body).toMatchObject({ code: "BAD_REQUEST", defined: false });
+    expect(body.data).toBeUndefined();
   });
 });

@@ -42,7 +42,10 @@ describe("ALTCHA middleware with an independent feature", () => {
 
   it("rejects an invalid challenge before the feature saves anything", async () => {
     verifyChallenge.mockResolvedValue(null);
-    await expect(call(book, bookingInput)).rejects.toMatchObject({ code: "INVALID_ALTCHA" });
+    await expect(call(book, bookingInput)).rejects.toMatchObject({
+      code: "INVALID_ALTCHA",
+      data: { errors: {}, fields: { altcha: altchaErrors.INVALID_ALTCHA.message } },
+    });
     expect(saveBooking).not.toHaveBeenCalled();
   });
 });

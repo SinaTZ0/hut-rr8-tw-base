@@ -18,11 +18,14 @@ export const submitComplaintProcedure = os.complaintsAndFeedback.submit
     });
 
     if (result.kind === "invalid") {
-      throw errors.INVALID_INPUT({ data: { field: result.field }, message: result.message });
+      throw errors.INVALID_INPUT({ data: { errors: {}, fields: result.fields } });
     }
 
     if (result.kind === "invalid_altcha") {
-      throw errors.INVALID_ALTCHA({ message: result.message });
+      throw errors.INVALID_ALTCHA({
+        message: result.message,
+        data: { errors: {}, fields: { altcha: result.message } },
+      });
     }
 
     return { status: initialComplaintStatus, trackingCode: result.trackingCode };

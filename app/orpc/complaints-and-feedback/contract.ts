@@ -1,6 +1,7 @@
 import { oc } from "@orpc/contract";
 import { z } from "zod";
 
+import { commonErrors, errorDataSchema } from "../errors";
 import { altchaErrors } from "../middleware/altcha/altcha.errors";
 import { databaseErrors } from "../middleware/database/database.errors";
 
@@ -28,10 +29,11 @@ const submitComplaintOutputSchema = z.object({
 export const complaintsAndFeedbackContract = {
   submit: oc
     .errors({
+      ...commonErrors,
       ...databaseErrors,
       ...altchaErrors,
       INVALID_INPUT: {
-        data: z.object({ field: z.string() }),
+        data: errorDataSchema,
         message: "The request contains invalid values.",
       },
     })

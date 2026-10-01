@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { isDefinedError } from "@orpc/client";
+import { ORPCError } from "@orpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { CircleAlert, LoaderCircle, Send } from "lucide-react";
 import { useCallback, useRef, useState, type FormEvent, type ReactNode } from "react";
@@ -14,6 +14,7 @@ import { Textarea } from "~/components/primitive/textarea/textarea";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { orpc } from "~/orpc/client";
 import { departmentValues, feedbackTypeValues } from "~/orpc/complaints-and-feedback/constants";
+import { errorDataSchema, type ErrorData } from "~/orpc/errors";
 
 import {
   complaintsAndFeedbackFormSchema,
@@ -21,6 +22,7 @@ import {
   type ComplaintsAndFeedbackFormValues,
 } from "../schema";
 import { SecurityChallenge, type SecurityChallengeHandle } from "./security-challenge";
+import { ServerErrorDetails } from "./server-error-details";
 import { SubmissionSuccess } from "./submission-success";
 
 /*===== Field Presentation =====*/
@@ -80,6 +82,7 @@ const feedbackTypeLabels: Record<(typeof feedbackTypeValues)[number], string> = 
 
 export function ComplaintsAndFeedbackForm() {
   const [formError, setFormError] = useState<string | null>(null);
+  const [serverErrors, setServerErrors] = useState<ErrorData["errors"] | null>(null);
   const challengeRef = useRef<SecurityChallengeHandle>(null);
   const form = useForm<ComplaintsAndFeedbackFormValues>({
     defaultValues: emptyComplaintsAndFeedbackForm,
@@ -92,46 +95,47 @@ export function ComplaintsAndFeedbackForm() {
 
   const updateChallenge = useCallback(
     (payload: string) => {
-      challenge.field.onChange(payload);
+      // Reset events can arrive after setError; keep the server message until a new proof or submission.
+      form.setValue("altcha", payload, { shouldDirty: true, shouldValidate: Boolean(payload) });
       if (payload) form.clearErrors("altcha");
     },
-    [challenge.field, form],
+    [form],
   );
 
   /*------ Server Error Handling ------*/
 
-  function handleSubmissionError(submissionError: NonNullable<typeof mutation.error>) {
-    if (isDefinedError(submissionError)) {
-      switch (submissionError.code) {
-        case "INVALID_ALTCHA":
-          challengeRef.current?.reset();
-          form.setError("altcha", { type: "server", message: submissionError.message });
-          return;
+  function applyServerFieldErrors(fields: ErrorData["fields"]) {
+    const invalidFields = (
+      Object.keys(emptyComplaintsAndFeedbackForm) as FieldPath<ComplaintsAndFeedbackFormValues>[]
+    ).filter((field) => Object.hasOwn(fields, field));
+    if (Object.hasOwn(fields, "altcha")) challengeRef.current?.reset();
 
-        case "INVALID_INPUT": {
-          const field = submissionError.data.field;
+    for (const field of invalidFields) {
+      form.setError(field, { type: "server", message: fields[field] });
+    }
+    // Form order determines focus, rather than the server's object entry order.
+    const firstInvalidField = invalidFields.find((field) => field !== "altcha");
+    if (firstInvalidField) form.setFocus(firstInvalidField);
+    return invalidFields.length > 0;
+  }
 
-          if (field !== "altcha" && Object.hasOwn(emptyComplaintsAndFeedbackForm, field)) {
-            form.setError(
-              field as FieldPath<ComplaintsAndFeedbackFormValues>,
-              {
-                type: "server",
-                message: submissionError.message,
-              },
-              { shouldFocus: true },
-            );
-            return;
-          }
-          break;
-        }
-
-        case "DATABASE_UNAVAILABLE":
-          setFormError(submissionError.message);
-          return;
-      }
+  function handleSubmissionError(submissionError: unknown) {
+    const parsed = errorDataSchema.safeParse(submissionError instanceof ORPCError ? submissionError.data : undefined);
+    if (!parsed.success) {
+      setFormError("ارسال پیام انجام نشد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.");
+      return;
     }
 
-    setFormError("ارسال پیام انجام نشد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.");
+    const { fields, errors: diagnostics } = parsed.data;
+    const hasFieldErrors = applyServerFieldErrors(fields);
+
+    if (Object.keys(diagnostics).length > 0) {
+      setFormError("ارسال پیام انجام نشد. لطفاً دوباره تلاش کنید.");
+      setServerErrors(diagnostics);
+    } else if (!hasFieldErrors) {
+      // Empty data or unfamiliar field names must not leave a failed submission silent.
+      setFormError("ارسال پیام انجام نشد. لطفاً دوباره تلاش کنید.");
+    }
   }
 
   /*------ Submission Lifecycle ------*/
@@ -139,22 +143,28 @@ export function ComplaintsAndFeedbackForm() {
   async function submit(values: ComplaintsAndFeedbackFormValues) {
     if (mutation.isPending) return;
     setFormError(null);
+    setServerErrors(null);
 
     try {
       await mutation.mutateAsync(values);
     } catch (error) {
-      handleSubmissionError(error as NonNullable<typeof mutation.error>);
+      handleSubmissionError(error);
     }
   }
 
   function startNewSubmission() {
     setFormError(null);
+    setServerErrors(null);
     form.reset(emptyComplaintsAndFeedbackForm);
     mutation.reset();
     requestAnimationFrame(() => form.setFocus("firstName"));
   }
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
+    if (!mutation.isPending) {
+      setFormError(null);
+      setServerErrors(null);
+    }
     void form.handleSubmit(submit)(event);
   }
 
@@ -294,7 +304,10 @@ export function ComplaintsAndFeedbackForm() {
               <Alert variant="destructive">
                 <CircleAlert aria-hidden="true" />
                 <AlertTitle>ارسال ناموفق</AlertTitle>
-                <AlertDescription>{formError}</AlertDescription>
+                <AlertDescription className="min-w-0">
+                  <p>{formError}</p>
+                  {serverErrors && <ServerErrorDetails errors={serverErrors} />}
+                </AlertDescription>
               </Alert>
             )}
 

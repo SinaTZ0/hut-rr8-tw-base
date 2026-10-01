@@ -169,8 +169,27 @@ describe("complaints and feedback API", () => {
     for (const { field, value } of invalidFields) {
       const invalid = await requestSubmission({ ...validSubmission, [field]: value, altcha });
       expect(invalid.response.status).toBe(422);
-      expect(invalid.body).toMatchObject({ code: "INVALID_INPUT", data: { field } });
+      expect(invalid.body).toMatchObject({
+        code: "INVALID_INPUT",
+        data: { errors: {}, fields: { [field]: expect.any(String) } },
+      });
     }
+
+    const multipleInvalid = await requestSubmission({
+      ...validSubmission,
+      altcha,
+      firstName: " ",
+      mobile: "123",
+      message: "short",
+    });
+    expect(multipleInvalid.response.status).toBe(422);
+    expect(multipleInvalid.body).toMatchObject({
+      code: "INVALID_INPUT",
+      data: {
+        errors: {},
+        fields: { firstName: expect.any(String), mobile: expect.any(String), message: expect.any(String) },
+      },
+    });
 
     const accepted = await requestSubmission({ ...validSubmission, altcha });
     expect(accepted.response.status).toBe(201);
@@ -218,6 +237,7 @@ describe("complaints and feedback API", () => {
       expect(result.body).toMatchObject({
         code: "INVALID_ALTCHA",
         message: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است.",
+        data: { errors: {}, fields: { altcha: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است." } },
       });
     }
 
@@ -232,6 +252,13 @@ describe("complaints and feedback API", () => {
     const result = await requestSubmission({ ...validSubmission, firstName: 42, altcha: await createEasyPayload() });
 
     expect(result.response.status).toBe(422);
-    expect(result.body).toMatchObject({ code: "BAD_REQUEST" });
+    expect(result.body).toMatchObject({
+      code: "BAD_REQUEST",
+      defined: true,
+      data: {
+        fields: { firstName: expect.any(String) },
+        errors: { "Input validation (firstName)": expect.any(String) },
+      },
+    });
   });
 });
