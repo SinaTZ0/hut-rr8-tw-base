@@ -195,7 +195,7 @@ export function SiteHeader({ searchGroups = siteSearchGroups }: { searchGroups?:
               {navigationGroups.map((group) => (
                 <NavigationMenuItem key={group.label}>
                   <NavigationMenuTrigger>{group.label}</NavigationMenuTrigger>
-                  <NavigationMenuContent className="w-[310px]">
+                  <NavigationMenuContent className="w-77.5">
                     <div className="mb-3 px-2">
                       <p className="text-xs leading-6 text-muted-foreground">{group.description}</p>
                       <Separator aria-hidden="true" className="-mx-2 mt-3" />
@@ -225,7 +225,7 @@ export function SiteHeader({ searchGroups = siteSearchGroups }: { searchGroups?:
               disabled={isPending}
               onClick={cycleTheme}
             >
-              <ThemeIcon theme={theme} className="size-[19px]" />
+              <ThemeIcon theme={theme} className="size-4.75" />
             </Button>
             <a
               href={destinations.english}
