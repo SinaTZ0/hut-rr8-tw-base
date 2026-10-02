@@ -1,0 +1,107 @@
+/*===== Presence and Retry Feedback =====*/
+
+.presence {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: error-enter 280ms ease-out both;
+}
+
+.viewport {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content {
+  transition:
+    filter 180ms ease-out,
+    opacity 180ms ease-out;
+}
+
+.presence[data-state="pending"] {
+  pointer-events: none;
+}
+
+.presence[data-state="pending"] .content {
+  filter: blur(3px);
+  opacity: 0.45;
+}
+
+.pending {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--destructive);
+  animation: spinner-enter 140ms ease-out both;
+}
+
+/*===== New Error Attention =====*/
+
+.attention {
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  border: 2px solid var(--destructive);
+  border-radius: inherit;
+  animation: error-border-pulse 1s ease-in-out 3 both;
+}
+
+/*===== Animation Phases =====*/
+
+@keyframes error-border-pulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes error-enter {
+  from {
+    grid-template-rows: 0fr;
+    margin-block-end: -1.25rem;
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    grid-template-rows: 1fr;
+    margin-block-end: 0;
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spinner-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*===== Reduced Motion =====*/
+
+@media (prefers-reduced-motion: reduce) {
+  .presence,
+  .pending {
+    animation-duration: 1ms;
+    transform: none;
+  }
+
+  .content {
+    transition: none;
+  }
+
+  .pending svg {
+    animation: none;
+  }
+
+  .attention {
+    animation: none;
+    opacity: 0;
+  }
+}

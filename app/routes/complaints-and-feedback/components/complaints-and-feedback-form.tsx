@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ORPCError } from "@orpc/client";
 import { useMutation } from "@tanstack/react-query";
-import { CircleAlert, LoaderCircle, Send } from "lucide-react";
+import { LoaderCircle, Send } from "lucide-react";
 import { useCallback, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useController, useForm, type FieldError as ReactHookFormFieldError, type FieldPath } from "react-hook-form";
 
@@ -11,7 +11,6 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "~/components/primitiv
 import { Input } from "~/components/primitive/input/input";
 import { NativeSelect, NativeSelectOption } from "~/components/primitive/native-select/native-select";
 import { Textarea } from "~/components/primitive/textarea/textarea";
-import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { orpc } from "~/orpc/client";
 import { departmentValues, feedbackTypeValues } from "~/orpc/complaints-and-feedback/constants";
 import { errorDataSchema, type ErrorData } from "~/orpc/errors";
@@ -22,7 +21,7 @@ import {
   type ComplaintsAndFeedbackFormValues,
 } from "../schema";
 import { SecurityChallenge, type SecurityChallengeHandle } from "./security-challenge";
-import { ServerErrorDetails } from "./server-error-details";
+import { SubmissionError, type SubmissionErrorContent } from "./submission-error";
 import { SubmissionSuccess } from "./submission-success";
 
 /*===== Field Presentation =====*/
@@ -81,8 +80,8 @@ const feedbackTypeLabels: Record<(typeof feedbackTypeValues)[number], string> = 
 /*===== Submission Form =====*/
 
 export function ComplaintsAndFeedbackForm() {
-  const [formError, setFormError] = useState<string | null>(null);
-  const [serverErrors, setServerErrors] = useState<ErrorData["errors"] | null>(null);
+  const [submissionError, setSubmissionError] = useState<SubmissionErrorContent | null>(null);
+  const [submissionPending, setSubmissionPending] = useState(false);
   const challengeRef = useRef<SecurityChallengeHandle>(null);
   const form = useForm<ComplaintsAndFeedbackFormValues>({
     defaultValues: emptyComplaintsAndFeedbackForm,
@@ -119,10 +118,10 @@ export function ComplaintsAndFeedbackForm() {
     return invalidFields.length > 0;
   }
 
-  function handleSubmissionError(submissionError: unknown) {
-    const parsed = errorDataSchema.safeParse(submissionError instanceof ORPCError ? submissionError.data : undefined);
+  function handleSubmissionError(error: unknown) {
+    const parsed = errorDataSchema.safeParse(error instanceof ORPCError ? error.data : undefined);
     if (!parsed.success) {
-      setFormError("ارسال پیام انجام نشد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید.");
+      setSubmissionError({ message: "ارسال پیام انجام نشد. لطفاً اتصال خود را بررسی کنید و دوباره تلاش کنید." });
       return;
     }
 
@@ -130,41 +129,39 @@ export function ComplaintsAndFeedbackForm() {
     const hasFieldErrors = applyServerFieldErrors(fields);
 
     if (Object.keys(diagnostics).length > 0) {
-      setFormError("ارسال پیام انجام نشد. لطفاً دوباره تلاش کنید.");
-      setServerErrors(diagnostics);
-    } else if (!hasFieldErrors) {
+      setSubmissionError({ message: "ارسال پیام انجام نشد. لطفاً دوباره تلاش کنید.", errors: diagnostics });
+    } else if (!hasFieldErrors || submissionError) {
       // Empty data or unfamiliar field names must not leave a failed submission silent.
-      setFormError("ارسال پیام انجام نشد. لطفاً دوباره تلاش کنید.");
+      // A retry with only field errors still replaces the previous card's stale diagnostics.
+      setSubmissionError({ message: "ارسال پیام انجام نشد. لطفاً دوباره تلاش کنید." });
     }
   }
 
   /*------ Submission Lifecycle ------*/
 
   async function submit(values: ComplaintsAndFeedbackFormValues) {
-    if (mutation.isPending) return;
-    setFormError(null);
-    setServerErrors(null);
+    if (submissionPending || mutation.data) return;
+    setSubmissionPending(true);
 
     try {
       await mutation.mutateAsync(values);
     } catch (error) {
       handleSubmissionError(error);
+    } finally {
+      // Replace any error content before revealing the card again.
+      setSubmissionPending(false);
     }
   }
 
   function startNewSubmission() {
-    setFormError(null);
-    setServerErrors(null);
+    setSubmissionError(null);
     form.reset(emptyComplaintsAndFeedbackForm);
     mutation.reset();
     requestAnimationFrame(() => form.setFocus("firstName"));
   }
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
-    if (!mutation.isPending) {
-      setFormError(null);
-      setServerErrors(null);
-    }
+    // Validation failures leave the existing error readable; only an actual retry blurs it.
     void form.handleSubmit(submit)(event);
   }
 
@@ -300,16 +297,7 @@ export function ComplaintsAndFeedbackForm() {
               />
             </FormField>
 
-            {formError && (
-              <Alert variant="destructive">
-                <CircleAlert aria-hidden="true" />
-                <AlertTitle>ارسال ناموفق</AlertTitle>
-                <AlertDescription className="min-w-0">
-                  <p>{formError}</p>
-                  {serverErrors && <ServerErrorDetails errors={serverErrors} />}
-                </AlertDescription>
-              </Alert>
-            )}
+            <SubmissionError error={submissionError} pending={submissionPending} />
 
             <div className="flex flex-col-reverse items-start justify-between gap-4 border-t border-border pt-5 sm:flex-row sm:items-center">
               <p className="text-xs leading-6 text-muted-foreground">
@@ -318,8 +306,8 @@ export function ComplaintsAndFeedbackForm() {
                 </span>{" "}
                 تکمیل این موارد الزامی است.
               </p>
-              <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={mutation.isPending}>
-                {mutation.isPending ? (
+              <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={submissionPending}>
+                {submissionPending ? (
                   <>
                     <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
                     در حال ارسال…
