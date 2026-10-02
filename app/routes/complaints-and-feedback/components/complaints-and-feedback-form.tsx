@@ -9,7 +9,7 @@ import { Button } from "~/components/primitive/button/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/primitive/card/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "~/components/primitive/field/field";
 import { Input } from "~/components/primitive/input/input";
-import { NativeSelect, NativeSelectOption } from "~/components/primitive/native-select/native-select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/primitive/select/select";
 import { Textarea } from "~/components/primitive/textarea/textarea";
 import { orpc } from "~/orpc/client";
 import { departmentValues, feedbackTypeValues } from "~/orpc/complaints-and-feedback/constants";
@@ -63,7 +63,7 @@ function FormField({
 }) {
   return (
     <Field data-invalid={Boolean(error)} className={className}>
-      <FieldLabel htmlFor={id}>
+      <FieldLabel id={`${id}-label`} htmlFor={id}>
         {label}
         {optional ? <OptionalMarker /> : <RequiredMarker />}
       </FieldLabel>
@@ -78,6 +78,19 @@ const feedbackTypeLabels: Record<(typeof feedbackTypeValues)[number], string> = 
   suggestion: "پیشنهادات و انتقادات",
 };
 
+// Controllers register before the rendered inputs; focus must follow the displayed field order instead.
+const formFieldOrder = [
+  "firstName",
+  "lastName",
+  "mobile",
+  "email",
+  "studentId",
+  "feedbackType",
+  "department",
+  "message",
+  "altcha",
+] satisfies FieldPath<ComplaintsAndFeedbackFormValues>[];
+
 /*===== Submission Form =====*/
 
 export function ComplaintsAndFeedbackForm() {
@@ -88,9 +101,15 @@ export function ComplaintsAndFeedbackForm() {
     defaultValues: emptyComplaintsAndFeedbackForm,
     mode: "onBlur",
     resolver: zodResolver(complaintsAndFeedbackFormSchema),
-    shouldFocusError: true,
+    shouldFocusError: false,
   });
   const challenge = useController({ control: form.control, name: "altcha" });
+  const {
+    field: { ref: feedbackTypeRef, ...feedbackTypeField },
+  } = useController({ control: form.control, name: "feedbackType" });
+  const {
+    field: { ref: departmentRef, ...departmentField },
+  } = useController({ control: form.control, name: "department" });
   const mutation = useMutation(orpc.complaintsAndFeedback.submit.mutationOptions());
 
   const updateChallenge = useCallback(
@@ -102,20 +121,22 @@ export function ComplaintsAndFeedbackForm() {
     [form],
   );
 
-  /*------ Server Error Handling ------*/
+  /*------ Field Error Handling ------*/
+
+  function focusFirstInvalidField(fields: string[]) {
+    const firstInvalidField = formFieldOrder.find((field) => field !== "altcha" && fields.includes(field));
+    if (firstInvalidField) form.setFocus(firstInvalidField);
+  }
 
   function applyServerFieldErrors(fields: ErrorData["fields"]) {
-    const invalidFields = (
-      Object.keys(emptyComplaintsAndFeedbackForm) as FieldPath<ComplaintsAndFeedbackFormValues>[]
-    ).filter((field) => Object.hasOwn(fields, field));
+    const invalidFields = formFieldOrder.filter((field) => Object.hasOwn(fields, field));
     if (Object.hasOwn(fields, "altcha")) challengeRef.current?.reset();
 
     for (const field of invalidFields) {
       form.setError(field, { type: "server", message: fields[field] });
     }
     // Form order determines focus, rather than the server's object entry order.
-    const firstInvalidField = invalidFields.find((field) => field !== "altcha");
-    if (firstInvalidField) form.setFocus(firstInvalidField);
+    focusFirstInvalidField(invalidFields);
     return invalidFields.length > 0;
   }
 
@@ -163,7 +184,7 @@ export function ComplaintsAndFeedbackForm() {
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     // Validation failures leave the existing error readable; only an actual retry blurs it.
-    void form.handleSubmit(submit)(event);
+    void form.handleSubmit(submit, (errors) => focusFirstInvalidField(Object.keys(errors)))(event);
   }
 
   if (mutation.data) {
@@ -242,20 +263,36 @@ export function ComplaintsAndFeedbackForm() {
               </FormField>
 
               <FormField id="feedbackType" label="نوع پیام" error={errors.feedbackType}>
-                <NativeSelect
-                  id="feedbackType"
+                <Select
+                  name={feedbackTypeField.name}
                   required
-                  className="w-full"
-                  {...getFieldErrorProps({ id: "feedbackType", error: errors.feedbackType })}
-                  {...form.register("feedbackType")}
+                  items={feedbackTypeLabels}
+                  value={feedbackTypeField.value || null}
+                  onValueChange={(value) => feedbackTypeField.onChange(value ?? "")}
+                  onOpenChange={(open) => {
+                    // Opening moves focus into the portal; validate when the interaction closes.
+                    if (!open) feedbackTypeField.onBlur();
+                  }}
                 >
-                  <NativeSelectOption value="">انتخاب کنید</NativeSelectOption>
-                  {feedbackTypeValues.map((value) => (
-                    <NativeSelectOption key={value} value={value}>
-                      {feedbackTypeLabels[value]}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
+                  <SelectTrigger
+                    id="feedbackType"
+                    ref={feedbackTypeRef}
+                    onBlur={(event) => {
+                      if (event.currentTarget.getAttribute("aria-expanded") !== "true") feedbackTypeField.onBlur();
+                    }}
+                    {...getFieldErrorProps({ id: "feedbackType", error: errors.feedbackType })}
+                  >
+                    <SelectValue placeholder="انتخاب کنید" />
+                  </SelectTrigger>
+                  <SelectContent aria-labelledby="feedbackType-label">
+                    <SelectItem value={null}>انتخاب کنید</SelectItem>
+                    {feedbackTypeValues.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {feedbackTypeLabels[value]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormField>
 
               <FormField
@@ -264,20 +301,34 @@ export function ComplaintsAndFeedbackForm() {
                 error={errors.department}
                 className="sm:col-span-2"
               >
-                <NativeSelect
-                  id="department"
+                <Select
+                  name={departmentField.name}
                   required
-                  className="w-full"
-                  {...getFieldErrorProps({ id: "department", error: errors.department })}
-                  {...form.register("department")}
+                  value={departmentField.value || null}
+                  onValueChange={(value) => departmentField.onChange(value ?? "")}
+                  onOpenChange={(open) => {
+                    if (!open) departmentField.onBlur();
+                  }}
                 >
-                  <NativeSelectOption value="">انتخاب کنید</NativeSelectOption>
-                  {departmentValues.map((department) => (
-                    <NativeSelectOption key={department} value={department}>
-                      {department}
-                    </NativeSelectOption>
-                  ))}
-                </NativeSelect>
+                  <SelectTrigger
+                    id="department"
+                    ref={departmentRef}
+                    onBlur={(event) => {
+                      if (event.currentTarget.getAttribute("aria-expanded") !== "true") departmentField.onBlur();
+                    }}
+                    {...getFieldErrorProps({ id: "department", error: errors.department })}
+                  >
+                    <SelectValue placeholder="انتخاب کنید" />
+                  </SelectTrigger>
+                  <SelectContent aria-labelledby="department-label">
+                    <SelectItem value={null}>انتخاب کنید</SelectItem>
+                    {departmentValues.map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormField>
 
               <FormField id="message" label="شرح پیام" error={errors.message} className="sm:col-span-2">

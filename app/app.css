@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/vazirmatn";
+@import "lenis/dist/lenis.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -145,6 +146,39 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/*===== Idle Frame Experiment =====*/
+
+/* Keep a few pixels visible: an invisible or covered animation can be culled by Chrome. */
+.idle-frame-animation {
+  position: fixed;
+  inset-inline-start: 8px;
+  bottom: 8px;
+  z-index: 9999;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.3;
+  pointer-events: none;
+  animation: idle-frame-drift 1s linear infinite alternate;
+}
+
+@keyframes idle-frame-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idle-frame-animation {
+    display: none;
+    animation: none;
   }
 }
 

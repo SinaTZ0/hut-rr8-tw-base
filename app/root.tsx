@@ -11,6 +11,7 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { SmoothScrolling } from "./components/smooth-scrolling";
 import { DirectionProvider } from "./components/ui/direction";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { readThemePreference, serializeThemePreference } from "./theme/theme-cookie.server";
@@ -76,6 +77,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </DirectionProvider>
         </ThemeProvider>
 
+        {/*===== Idle Frame Experiment =====*/}
+        <div className="idle-frame-animation" aria-hidden="true" />
+
+        <SmoothScrolling />
         <ScrollRestoration />
         <Scripts />
       </body>
