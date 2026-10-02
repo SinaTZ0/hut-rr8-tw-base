@@ -9,7 +9,30 @@ import { defineConfig } from "vite";
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter()],
+  /*===== Development Server =====*/
+  plugins: [
+    {
+      name: "quiet-chrome-devtools-discovery",
+      configureServer(server) {
+        server.middlewares.use((request, response, next) => {
+          // Chrome probes for automatic workspaces. Decline before React Router
+          // handles the request as an unmatched page and logs a stack trace.
+          if (
+            request.url?.split("?")[0] ===
+            "/.well-known/appspecific/com.chrome.devtools.json"
+          ) {
+            response.statusCode = 404;
+            response.end();
+            return;
+          }
+
+          next();
+        });
+      },
+    },
+    tailwindcss(),
+    reactRouter(),
+  ],
   resolve: {
     tsconfigPaths: true,
   },
