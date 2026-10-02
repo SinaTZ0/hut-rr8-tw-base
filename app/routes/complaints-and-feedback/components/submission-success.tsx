@@ -62,7 +62,13 @@ export function SubmissionSuccess({
             <RotateCcw aria-hidden="true" />
             ثبت پیام جدید
           </Button>
-          <Button nativeButton={false} role="link" variant="outline" className="flex-1" render={<Link to="/" />}>
+          <Button
+            nativeButton={false}
+            role="link"
+            variant="outline"
+            className="flex-1"
+            render={<Link to="/" viewTransition />}
+          >
             <Home aria-hidden="true" />
             بازگشت به صفحه اصلی
           </Button>

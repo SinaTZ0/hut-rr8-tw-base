@@ -26,7 +26,7 @@ const socialLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-university-deep pt-12 text-white sm:pt-16">
+    <footer className="site-footer bg-university-deep pt-12 text-white sm:pt-16">
       <PageContainer>
         <div className="grid gap-x-8 gap-y-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.8fr_0.8fr_1.1fr]">
           <div>

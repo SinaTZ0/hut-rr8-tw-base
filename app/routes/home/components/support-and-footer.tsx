@@ -55,7 +55,7 @@ export function StudentSupport() {
           </div>
           <div className="flex flex-col justify-center px-7 sm:px-9 lg:px-10">
             <LinkTile
-              render={<Link to="/complaints-and-feedback" />}
+              render={<Link to="/complaints-and-feedback" viewTransition />}
               icon={<MessagesSquare strokeWidth={1.5} />}
               description="ثبت شکایت، پیشنهاد یا انتقاد و دریافت کد پیگیری"
               className="-mx-3"

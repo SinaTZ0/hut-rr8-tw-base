@@ -1,14 +1,17 @@
 import { cn } from "cn";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 import logo from "~/assets/branding-navbar-logo.png";
 
 /*===== University Identity =====*/
 
 export function Brand({ inverse = false }: { inverse?: boolean }) {
+  const { pathname } = useLocation();
+
   return (
     <Link
       to="/"
+      viewTransition={pathname === "/complaints-and-feedback"}
       aria-label="صفحه اصلی دانشگاه صنعتی همدان"
       className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
     >

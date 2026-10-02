@@ -161,7 +161,7 @@ export function SiteHeader({ searchGroups = siteSearchGroups }: { searchGroups?:
   const themeLabel = getThemeControlLabel(theme);
 
   return (
-    <header>
+    <header className="site-header">
       {/*===== Official Site Utility Bar =====*/}
       <div className="bg-university-deep text-white/80">
         <PageContainer className="flex min-h-9 items-center justify-between gap-4 text-[11px]">

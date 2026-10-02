@@ -148,6 +148,46 @@
   }
 }
 
+/*===== Page View Transitions =====*/
+
+/* Separate the shared chrome from the viewport snapshot so only page content fades. */
+.site-header {
+  view-transition-name: site-header;
+}
+
+.site-footer {
+  view-transition-name: site-footer;
+}
+
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+
+/* Show the destination chrome immediately, without fading or interpolating its position. */
+::view-transition-group(site-header),
+::view-transition-group(site-footer),
+::view-transition-new(site-header),
+::view-transition-new(site-footer) {
+  animation: none;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(site-footer) {
+  display: none;
+}
+
+/* View-transition pseudo-elements are outside the normal DOM motion selectors. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /*===== Homepage Motion Accessibility =====*/
 @media (prefers-reduced-motion: reduce) {
   html[data-homepage-active] *,

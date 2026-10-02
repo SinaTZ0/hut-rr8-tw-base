@@ -23,6 +23,7 @@ import {
 import { SecurityChallenge, type SecurityChallengeHandle } from "./security-challenge";
 import { SubmissionError, type SubmissionErrorContent } from "./submission-error";
 import { SubmissionSuccess } from "./submission-success";
+import styles from "./complaints-and-feedback-form.module.css";
 
 /*===== Field Presentation =====*/
 
@@ -166,12 +167,16 @@ export function ComplaintsAndFeedbackForm() {
   }
 
   if (mutation.data) {
-    return <SubmissionSuccess trackingCode={mutation.data.trackingCode} onNewSubmission={startNewSubmission} />;
+    return (
+      <div key="success" className={styles.view}>
+        <SubmissionSuccess trackingCode={mutation.data.trackingCode} onNewSubmission={startNewSubmission} />
+      </div>
+    );
   }
 
   const { errors } = form.formState;
 
-  return (
+  const formContent = (
     <Card radius="lg">
       <form noValidate onSubmit={handleFormSubmit}>
         <CardHeader>
@@ -324,5 +329,12 @@ export function ComplaintsAndFeedbackForm() {
         </CardContent>
       </form>
     </Card>
+  );
+
+  // Distinct keys restart the entrance animation only when switching between form and success.
+  return (
+    <div key="form" className={styles.view}>
+      {formContent}
+    </div>
   );
 }

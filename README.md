@@ -78,6 +78,10 @@ Make sure to deploy the output of `npm run build`
 │   └── server/    # Server-side code
 ```
 
+## Navigation
+
+See [Page navigation](docs/navigation.md) for enabling the content fade on internal links, keeping the header and footer steady, and respecting reduced motion.
+
 ## Styling
 
 The university UI uses Tailwind CSS, Vazirmatn Variable, and styled Base UI primitives.
