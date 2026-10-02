@@ -1,3 +1,4 @@
+import { Provider as JotaiProvider } from "jotai";
 import {
   data,
   isRouteErrorResponse,
@@ -11,7 +12,9 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { QueryProvider } from "./components/query-provider";
 import { SmoothScrolling } from "./components/smooth-scrolling";
+import { WebsiteVisitsRuntime } from "./components/site/website-visits-runtime";
 import { DirectionProvider } from "./components/ui/direction";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { readThemePreference, serializeThemePreference } from "./theme/theme-cookie.server";
@@ -71,11 +74,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ThemeProvider initialTheme={theme}>
-          <DirectionProvider direction="rtl">
-            <TooltipProvider>{children}</TooltipProvider>
-          </DirectionProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <JotaiProvider>
+            <ThemeProvider initialTheme={theme}>
+              <DirectionProvider direction="rtl">
+                <TooltipProvider>{children}</TooltipProvider>
+              </DirectionProvider>
+            </ThemeProvider>
+          </JotaiProvider>
+        </QueryProvider>
 
         {/*===== Idle Frame Experiment =====*/}
         <div className="idle-frame-animation" aria-hidden="true" />
@@ -91,7 +98,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 /*===== Application =====*/
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <WebsiteVisitsRuntime />
+    </>
+  );
 }
 
 /*===== Root Error Boundary =====*/

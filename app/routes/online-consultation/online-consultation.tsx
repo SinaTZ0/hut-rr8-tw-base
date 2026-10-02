@@ -1,7 +1,6 @@
 import type { Route } from "./+types/online-consultation";
 
 import { Button } from "~/components/primitive/button/button";
-import { SubmissionQueryProvider } from "~/components/forms/query-provider";
 import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
 import { PageContainer } from "~/components/site/page-container";
 import { SiteFooter } from "~/components/site/site-footer";
@@ -59,16 +58,14 @@ export default function OnlineConsultationPage() {
         {/*===== Form and Follow-up Guide =====*/}
         <section aria-label="ثبت درخواست مشاوره" className="bg-muted/30 py-12 sm:py-16">
           <PageContainer>
-            <SubmissionQueryProvider>
-              <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-8">
-                <div className="order-2 lg:order-1">
-                  <OnlineConsultationForm />
-                </div>
-                <div className="order-1 lg:sticky lg:top-6 lg:order-2">
-                  <FollowUpGuide />
-                </div>
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-8">
+              <div className="order-2 lg:order-1">
+                <OnlineConsultationForm />
               </div>
-            </SubmissionQueryProvider>
+              <div className="order-1 lg:sticky lg:top-6 lg:order-2">
+                <FollowUpGuide />
+              </div>
+            </div>
           </PageContainer>
         </section>
       </main>

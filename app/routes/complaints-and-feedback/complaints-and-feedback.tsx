@@ -1,7 +1,6 @@
 import type { Route } from "./+types/complaints-and-feedback";
 
 import { Eyebrow } from "~/components/primitive/eyebrow/eyebrow";
-import { SubmissionQueryProvider } from "~/components/forms/query-provider";
 import { PageContainer } from "~/components/site/page-container";
 import { SiteFooter } from "~/components/site/site-footer";
 import { SiteHeader } from "~/components/site/site-header";
@@ -54,16 +53,14 @@ export default function ComplaintsAndFeedbackPage() {
         {/*===== Form and Follow-up Guide =====*/}
         <section aria-label="ثبت شکایات و پیشنهادات" className="bg-muted/30 py-12 sm:py-16">
           <PageContainer>
-            <SubmissionQueryProvider>
-              <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-8">
-                <div className="order-2 lg:order-1">
-                  <ComplaintsAndFeedbackForm />
-                </div>
-                <div className="order-1 lg:sticky lg:top-6 lg:order-2">
-                  <FollowUpGuide />
-                </div>
+            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-8">
+              <div className="order-2 lg:order-1">
+                <ComplaintsAndFeedbackForm />
               </div>
-            </SubmissionQueryProvider>
+              <div className="order-1 lg:sticky lg:top-6 lg:order-2">
+                <FollowUpGuide />
+              </div>
+            </div>
           </PageContainer>
         </section>
       </main>

@@ -9,7 +9,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The Playwright suite builds the app, starts an isolated production server on `127.0.0.1:5183`, and stops it after the run. Leave that port free. It supplies its own ALTCHA secret and a deliberately unreachable database URL, so no application or test database is required. Tests solve the real security challenge and explicitly mock submission responses. An unmocked RPC call or an uncaught browser error fails the test.
+The Playwright suite builds the app, starts an isolated production server on `127.0.0.1:5183`, and stops it after the run. Leave that port free. It supplies its own ALTCHA secret and a deliberately unreachable database URL, so no application or test database is required. Tests solve the real security challenge and explicitly mock submission responses. The shared fixture mocks the three known visit statistics procedures; statistics tests override those responses to verify tracking and failure recovery. An unmocked RPC call or an uncaught browser error fails the test.
 
 Route tests live beside their route modules as `*.e2e.test.ts`. Shared browser fixtures and helpers live in `tests/e2e/`. The suite covers consultation validation, normalization, submission states, security reset, copying, keyboard focus, navigation, both forms' responsive accessibility, and the complaints flow's shared components.
 
@@ -32,7 +32,7 @@ NODE_ENV=test npm run db:push
 npm run test:integration
 ```
 
-Integration tests exercise the actual API, persistence, validation, challenge replay protection, error handling, and request timings. Configure `DATABASE_URL`, `TEST_DATABASE_URL`, and `ALTCHA_HMAC_SECRET`; the test database must differ from the application database. These tests create and clean up their own submission rows.
+Integration tests exercise the actual API, persistence, validation, challenge replay protection, error handling, and request timings. Configure `DATABASE_URL`, `TEST_DATABASE_URL`, and `ALTCHA_HMAC_SECRET`; the test database must differ from the application database. These tests create and clean up their own submission and statistics rows. Visit tests additionally cover concurrent deduplication, Tehran calendar boundaries, bigint precision, presence expiration, cookie/HTTPS behavior, privacy exclusions, and receipt retention. See [website visit statistics](./website-visit-statistics.md) for the counting rules.
 
 ## Component tests and static checks
 

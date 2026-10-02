@@ -5,6 +5,7 @@ import { destinations, services } from "~/content/university-links";
 
 import { Brand } from "./brand";
 import { PageContainer } from "./page-container";
+import { WebsiteVisitStatistics } from "./website-visit-statistics";
 
 /*===== Footer Destinations =====*/
 
@@ -102,6 +103,8 @@ export function SiteFooter() {
             </TextLink>
           </div>
         </div>
+        {/*===== Website Visits =====*/}
+        <WebsiteVisitStatistics />
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/15 py-6 text-[10px] leading-6 text-white/65">
           <p>کلیه حقوق این وب‌سایت متعلق به دانشگاه صنعتی همدان است.</p>
           <span lang="en" dir="ltr" className="tracking-[0.14em]">

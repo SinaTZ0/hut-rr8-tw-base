@@ -1,4 +1,34 @@
-import { integer, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { bigint, date, index, integer, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+
+/*===== Website Visits =====*/
+
+export const websiteVisitDaysTable = pgTable("website_visit_days", {
+  day: date("day").primaryKey(),
+  // A SQL default avoids drizzle-kit's JSON serialization of bigint literals during db:push.
+  pageViews: bigint("page_views", { mode: "bigint" })
+    .notNull()
+    .default(sql`0`),
+});
+
+// Receipts are short-lived; aggregates survive receipt cleanup and server restarts.
+export const websiteVisitEventsTable = pgTable(
+  "website_visit_events",
+  {
+    id: uuid("id").primaryKey(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull(),
+  },
+  (table) => [index("website_visit_events_received_at_idx").on(table.receivedAt)],
+);
+
+export const websiteVisitPresenceTable = pgTable(
+  "website_visit_presence",
+  {
+    id: uuid("id").primaryKey(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull(),
+  },
+  (table) => [index("website_visit_presence_last_seen_at_idx").on(table.lastSeenAt)],
+);
 
 /*===== Complaints and Feedback =====*/
 
