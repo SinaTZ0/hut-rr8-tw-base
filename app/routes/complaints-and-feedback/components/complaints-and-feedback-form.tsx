@@ -5,6 +5,10 @@ import { LoaderCircle, Send } from "lucide-react";
 import { useCallback, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useController, useForm, type FieldError as ReactHookFormFieldError, type FieldPath } from "react-hook-form";
 
+import { SecurityChallenge, type SecurityChallengeHandle } from "~/components/forms/security-challenge";
+import { SubmissionError, type SubmissionErrorContent } from "~/components/forms/submission-error";
+import { SubmissionSuccess } from "~/components/forms/submission-success";
+import styles from "~/components/forms/submission-view.module.css";
 import { Button } from "~/components/primitive/button/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/primitive/card/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "~/components/primitive/field/field";
@@ -20,10 +24,6 @@ import {
   emptyComplaintsAndFeedbackForm,
   type ComplaintsAndFeedbackFormValues,
 } from "../schema";
-import { SecurityChallenge, type SecurityChallengeHandle } from "./security-challenge";
-import { SubmissionError, type SubmissionErrorContent } from "./submission-error";
-import { SubmissionSuccess } from "./submission-success";
-import styles from "./complaints-and-feedback-form.module.css";
 
 /*===== Field Presentation =====*/
 
@@ -97,9 +97,12 @@ export function ComplaintsAndFeedbackForm() {
   const [submissionError, setSubmissionError] = useState<SubmissionErrorContent | null>(null);
   const [submissionPending, setSubmissionPending] = useState(false);
   const challengeRef = useRef<SecurityChallengeHandle>(null);
+  const submissionLock = useRef(false);
   const form = useForm<ComplaintsAndFeedbackFormValues>({
     defaultValues: emptyComplaintsAndFeedbackForm,
-    mode: "onBlur",
+    // Start validation on blur, then recheck edits without making the user leave the field.
+    mode: "onTouched",
+    delayError: 300,
     resolver: zodResolver(complaintsAndFeedbackFormSchema),
     shouldFocusError: false,
   });
@@ -162,7 +165,9 @@ export function ComplaintsAndFeedbackForm() {
   /*------ Submission Lifecycle ------*/
 
   async function submit(values: ComplaintsAndFeedbackFormValues) {
-    if (submissionPending || mutation.data) return;
+    // A synchronous guard also covers submissions queued before React commits disabled state.
+    if (submissionLock.current || mutation.data) return;
+    submissionLock.current = true;
     setSubmissionPending(true);
 
     try {
@@ -171,6 +176,7 @@ export function ComplaintsAndFeedbackForm() {
       handleSubmissionError(error);
     } finally {
       // Replace any error content before revealing the card again.
+      submissionLock.current = false;
       setSubmissionPending(false);
     }
   }

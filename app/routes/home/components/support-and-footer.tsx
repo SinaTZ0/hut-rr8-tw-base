@@ -64,9 +64,9 @@ export function StudentSupport() {
             </LinkTile>
             <Separator aria-hidden="true" className="-mx-3" />
             <LinkTile
-              href="http://counseling.hut.ac.ir"
+              render={<Link to="/online-consultation" viewTransition />}
               icon={<Phone strokeWidth={1.5} />}
-              description="دریافت راهنمایی از مرکز مشاوره و سبک زندگی دانشگاه"
+              description="ثبت پرسش برای دریافت راهنمایی و دریافت کد پیگیری"
               className="-mx-3"
             >
               همراه شما در مسیر دانشگاه

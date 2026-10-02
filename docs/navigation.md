@@ -1,6 +1,6 @@
 # Page navigation
 
-Use React Router's `Link` for internal page navigation. The current `/` ↔ `/complaints-and-feedback` links opt into a native **200 ms, ease-out cross-fade**. The header and footer stay visually steady.
+Use React Router's `Link` for internal page navigation. The current `/` ↔ `/complaints-and-feedback` and `/` ↔ `/online-consultation` links opt into a native **200 ms, ease-out cross-fade**. The header and footer stay visually steady.
 
 ## Enabling the fade
 
@@ -22,7 +22,7 @@ When composing a university primitive, pass the Router link through its existing
 
 For programmatic navigation with `useNavigate`, use `navigate(destination, { viewTransition: true })`. React Router manages the browser transition; no animation library or manual `document.startViewTransition()` call is needed.
 
-The shared [Brand](../app/components/site/brand.tsx) enables its home-link transition only from `/complaints-and-feedback`. Extend that pathname condition when adding another page that should fade back to home; clicking the logo on home should remain unanimated.
+The shared [Brand](../app/components/site/brand.tsx) enables its home-link transition from `/complaints-and-feedback` and `/online-consultation`. Extend that pathname condition when adding another page that should fade back to home; clicking the logo on home should remain unanimated.
 
 ## Shared styling and behavior
 

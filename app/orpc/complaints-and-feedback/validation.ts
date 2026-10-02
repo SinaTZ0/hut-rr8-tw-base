@@ -1,19 +1,8 @@
 import { z } from "zod";
 
+import { normalizeDigits, normalizeMobile } from "../../lib/form-normalization";
+
 import { departmentValues, feedbackTypeValues } from "./constants";
-
-/*===== Service Normalization =====*/
-
-function normalizeDigits(value: string) {
-  return value
-    .replace(/[۰-۹]/g, (digit) => String(digit.charCodeAt(0) - "۰".charCodeAt(0)))
-    .replace(/[٠-٩]/g, (digit) => String(digit.charCodeAt(0) - "٠".charCodeAt(0)));
-}
-
-function normalizeMobile(value: string) {
-  const digits = normalizeDigits(value).replace(/[\s-]/g, "");
-  return digits.startsWith("+98") ? `0${digits.slice(3)}` : digits;
-}
 
 /*===== Service Field Rules =====*/
 

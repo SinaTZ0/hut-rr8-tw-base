@@ -3,7 +3,7 @@ import { useState, type ReactNode } from "react";
 
 /*===== Route Query Runtime =====*/
 
-export function ComplaintsQueryProvider({ children }: { children: ReactNode }) {
+export function SubmissionQueryProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({

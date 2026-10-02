@@ -11,7 +11,7 @@ export function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
     <Link
       to="/"
-      viewTransition={pathname === "/complaints-and-feedback"}
+      viewTransition={["/complaints-and-feedback", "/online-consultation"].includes(pathname)}
       aria-label="صفحه اصلی دانشگاه صنعتی همدان"
       className="flex shrink-0 items-center gap-3 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-highlight focus-visible:outline-solid"
     >

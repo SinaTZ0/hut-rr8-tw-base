@@ -7,7 +7,8 @@ import { router } from "./router";
 
 export const rpcHandler = new RPCHandler(router, {
   errorStatusMap: rpcErrorStatusMap,
-  outputStatus: (_output, _procedure, path) => (path.join(".") === "complaintsAndFeedback.submit" ? 201 : undefined),
+  outputStatus: (_output, _procedure, path) =>
+    ["complaintsAndFeedback.submit", "onlineConsultation.submit"].includes(path.join(".")) ? 201 : undefined,
 });
 
 export async function handleRpcRequest({ request }: { request: Request }) {

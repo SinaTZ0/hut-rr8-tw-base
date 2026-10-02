@@ -1,39 +1,35 @@
 import type { Database } from "../../db/client";
 import type { Measure } from "../../lib/request-timing.server";
 import { createTrackingCode, isUniqueConstraint } from "../../lib/submission.server";
-import { initialComplaintStatus } from "./constants";
-import type { SubmitComplaintInput } from "./contract";
-import { insertComplaint } from "./repository";
-import { complaintFieldsSchema } from "./validation";
+import { initialConsultationStatus } from "./constants";
+import type { SubmitConsultationInput } from "./contract";
+import { insertConsultation } from "./repository";
+import { consultationFieldsSchema } from "./validation";
 
 /*===== Submission Types =====*/
 
 type InvalidSubmission = { kind: "invalid"; fields: Record<string, string> };
 type InvalidChallenge = { kind: "invalid_altcha"; message: string };
 
-export type ComplaintSubmissionResult =
+export type ConsultationSubmissionResult =
   InvalidSubmission | InvalidChallenge | { kind: "success"; trackingCode: string };
 
 /*===== Stored Domain Values =====*/
 
-const submissionSchema = complaintFieldsSchema.transform((values) => ({
+const submissionSchema = consultationFieldsSchema.transform((values) => ({
   ...values,
-  lastName: values.lastName || null,
   mobile: values.mobile || null,
   email: values.email || null,
-  studentId: values.studentId || null,
 }));
 
 /*===== Form Validation =====*/
 
 /** Collects every invalid field, retaining its first actionable validation message. */
-function normalizeSubmission(input: Omit<SubmitComplaintInput, "altcha">) {
+function normalizeSubmission(input: Omit<SubmitConsultationInput, "altcha">) {
   const parsed = submissionSchema.safeParse({
     ...input,
-    lastName: input.lastName ?? "",
     mobile: input.mobile ?? "",
     email: input.email ?? "",
-    studentId: input.studentId ?? "",
   });
   if (!parsed.success) {
     const fields: Record<string, string> = {};
@@ -56,20 +52,20 @@ function normalizeSubmission(input: Omit<SubmitComplaintInput, "altcha">) {
 /*===== Submission =====*/
 
 /** Validates and saves a submission using a nonce verified by the shared challenge guard. */
-export async function submitComplaint({
+export async function submitConsultation({
   db,
   input,
   altchaNonce,
   measure,
 }: {
   db: Database;
-  input: Omit<SubmitComplaintInput, "altcha">;
+  input: Omit<SubmitConsultationInput, "altcha">;
   altchaNonce: string;
   measure: Measure;
-}): Promise<ComplaintSubmissionResult> {
+}): Promise<ConsultationSubmissionResult> {
   return measure({
     layer: "service",
-    name: "submitComplaint",
+    name: "submitConsultation",
     run: async () => {
       const normalized = normalizeSubmission(input);
       if (normalized.kind === "invalid") return normalized;
@@ -78,25 +74,22 @@ export async function submitComplaint({
 
       for (let attempt = 0; attempt < 3; attempt += 1) {
         try {
-          const record = await insertComplaint({
+          const record = await insertConsultation({
             db,
             measure,
             values: {
               ...normalized.values,
               altchaNonce,
-              status: initialComplaintStatus,
+              status: initialConsultationStatus,
               trackingCode: createTrackingCode(),
             },
           });
           return { kind: "success", trackingCode: record.trackingCode };
         } catch (error) {
-          if (isUniqueConstraint({ error, constraint: "complaints_and_feedback_altcha_nonce_unique" })) {
+          if (isUniqueConstraint({ error, constraint: "online_consultation_altcha_nonce_unique" })) {
             return { kind: "invalid_altcha", message: "اعتبارسنجی امنیتی قبلاً استفاده شده است." };
           }
-          if (
-            !isUniqueConstraint({ error, constraint: "complaints_and_feedback_tracking_code_unique" }) ||
-            attempt === 2
-          ) {
+          if (!isUniqueConstraint({ error, constraint: "online_consultation_tracking_code_unique" }) || attempt === 2) {
             throw error;
           }
         }

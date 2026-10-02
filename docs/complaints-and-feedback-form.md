@@ -65,7 +65,8 @@ Render these options in this order:
 
 - Start all fields empty, including both selects.
 - Show `(اختیاری)` beside optional field labels and `*` beside required field labels.
-- Validate on blur and again when the user submits.
+- Validate on the first blur, then on each edit, and again when the user submits.
+- Delay displaying validation errors by 300 ms to avoid flicker during typing; clear corrected errors immediately. Submission validation remains immediate.
 - Keep each validation message directly below its control.
 - Mark invalid controls with `aria-invalid="true"` and connect them to their error message through `aria-describedby`.
 - Preserve user-entered values when validation fails.
