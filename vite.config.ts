@@ -16,7 +16,9 @@ export default defineConfig({
   test: {
     projects: [
       {
-        extends: true,
+        // Browser stories use the same isolated Vite config as Storybook's previews.
+        // Inheriting React Router's application plugin requires its missing page preamble.
+        extends: join(import.meta.dirname, ".storybook/vite.config.ts"),
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config
           // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
