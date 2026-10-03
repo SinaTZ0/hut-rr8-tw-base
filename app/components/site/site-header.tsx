@@ -34,6 +34,8 @@ import {
 } from "~/content/university-links";
 import { getNextTheme, type ThemePreference } from "~/theme/theme";
 import { useTheme } from "~/theme/theme-provider";
+import { AppLink } from "~/navigation/app-link";
+import { isLocalHref } from "~/navigation/view-transition";
 
 import { Brand } from "./brand";
 import { PageContainer } from "./page-container";
@@ -94,16 +96,27 @@ function MobileNavigation({
                 <AccordionTrigger>{group.label}</AccordionTrigger>
                 <AccordionContent>
                   <div className="grid gap-1 pb-3">
-                    {group.links.map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.href}
-                        onClick={() => setOpen(false)}
-                        className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid"
-                      >
-                        {link.label}
-                      </a>
-                    ))}
+                    {group.links.map((link) =>
+                      isLocalHref(link.href) ? (
+                        <AppLink
+                          key={link.label}
+                          to={link.href}
+                          onClick={() => setOpen(false)}
+                          className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid"
+                        >
+                          {link.label}
+                        </AppLink>
+                      ) : (
+                        <a
+                          key={link.label}
+                          href={link.href}
+                          onClick={() => setOpen(false)}
+                          className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary focus-visible:outline-solid"
+                        >
+                          {link.label}
+                        </a>
+                      ),
+                    )}
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -201,7 +214,11 @@ export function SiteHeader({ searchGroups = siteSearchGroups }: { searchGroups?:
                       <Separator aria-hidden="true" className="-mx-2 mt-3" />
                     </div>
                     {group.links.map((link) => (
-                      <NavigationMenuLink key={link.label} href={link.href}>
+                      <NavigationMenuLink
+                        key={link.label}
+                        href={link.href}
+                        render={isLocalHref(link.href) ? <AppLink to={link.href} /> : undefined}
+                      >
                         {link.label}
                         <ArrowUpLeft className="size-3.5 text-muted-foreground" aria-hidden="true" />
                       </NavigationMenuLink>

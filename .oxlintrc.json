@@ -10,6 +10,19 @@
     "complexity": ["warn", { "max": 10, "variant": "classic" }],
     "max-depth": ["warn", { "max": 4 }],
     "react/rules-of-hooks": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "react-router",
+            "importNames": ["Link", "NavLink", "Form", "Navigate", "useNavigate", "useSubmit", "useSearchParams"],
+            "allowTypeImports": true,
+            "message": "Use the adapters in app/navigation/ so local client navigation has view transitions by default. See docs/navigation.md."
+          }
+        ]
+      }
+    ],
     "shadcn/no-restyle": [
       "error",
       {
@@ -24,6 +37,12 @@
     }
   },
   "overrides": [
+    {
+      "files": ["app/navigation/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
     {
       "files": ["app/components/primitive/**", "app/components/ui/**"],
       "rules": {

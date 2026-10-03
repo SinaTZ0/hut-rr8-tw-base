@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, Search, X } from "lucide-react";
-import { useNavigate } from "react-router";
 
 import { Button } from "~/components/primitive/button/button";
 import {
@@ -15,6 +14,8 @@ import {
 import { Separator } from "~/components/primitive/separator/separator";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
 import type { UniversitySearchGroup } from "~/content/university-links";
+import { useAppNavigate } from "~/navigation/use-app-navigate";
+import { isLocalHref } from "~/navigation/view-transition";
 
 /*===== Persian Search Matching =====*/
 
@@ -34,7 +35,7 @@ function normalizeQuery(value: string) {
 export function SiteSearch({ groups }: { groups: UniversitySearchGroup[] }) {
   const [open, setOpen] = useState(false);
   const destinationRef = useRef<string | null>(null);
-  const navigate = useNavigate();
+  const navigate = useAppNavigate();
 
   return (
     <Dialog
@@ -89,7 +90,7 @@ export function SiteSearch({ groups }: { groups: UniversitySearchGroup[] }) {
                         return;
                       }
 
-                      if (link.href.startsWith("/")) {
+                      if (isLocalHref(link.href)) {
                         setOpen(false);
                         navigate(link.href);
                         return;

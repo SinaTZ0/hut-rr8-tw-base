@@ -1,11 +1,11 @@
 import { ArrowLeft, ArrowUpLeft, GraduationCap, MessagesSquare, Phone } from "lucide-react";
-import { Link } from "react-router";
 
 import { Button } from "~/components/primitive/button/button";
 import { LinkTile } from "~/components/primitive/link-tile/link-tile";
 import { Separator } from "~/components/primitive/separator/separator";
 import { PageContainer } from "~/components/site/page-container";
 import { destinations } from "~/content/university-links";
+import { AppLink } from "~/navigation/app-link";
 
 /*===== Student Guidance and University Contact =====*/
 
@@ -55,7 +55,7 @@ export function StudentSupport() {
           </div>
           <div className="flex flex-col justify-center px-7 sm:px-9 lg:px-10">
             <LinkTile
-              render={<Link to="/complaints-and-feedback" viewTransition />}
+              render={<AppLink to="/complaints-and-feedback" />}
               icon={<MessagesSquare strokeWidth={1.5} />}
               description="ثبت شکایت، پیشنهاد یا انتقاد و دریافت کد پیگیری"
               className="-mx-3"
@@ -64,7 +64,7 @@ export function StudentSupport() {
             </LinkTile>
             <Separator aria-hidden="true" className="-mx-3" />
             <LinkTile
-              render={<Link to="/online-consultation" viewTransition />}
+              render={<AppLink to="/online-consultation" />}
               icon={<Phone strokeWidth={1.5} />}
               description="ثبت پرسش برای دریافت راهنمایی و دریافت کد پیگیری"
               className="-mx-3"

@@ -59,6 +59,14 @@ Preserve established local conventions unless a rule below explicitly says other
 
 Import values and types directly from their owning modules. Do not create directory barrel files such as `index.ts`.
 
+### Client Navigation
+
+- Use the unstyled adapters in `app/navigation/` for local client navigation. Import each adapter directly from its owning file; do not import `Link`, `NavLink`, `Navigate`, `Form`, `useNavigate`, `useSubmit`, or `useSearchParams` directly from React Router outside the adapter modules.
+- Compose `AppLink` and `AppNavLink` with university primitives through their existing `render` props. Navigation adapters own behavior; primitives continue to own visual styles.
+- Page and query navigations transition by default. Use `viewTransition={false}` (or the corresponding hook option) only for intentional exceptions.
+- Keep same-page anchors, external/document destinations, downloads, email, and telephone links native. For mixed destination lists, use the shared `isLocalHref` helper to select the appropriate link.
+- Do not patch Router internals or manually start view transitions. See `docs/navigation.md` for the adapters, scrolling behavior, and history limitations.
+
 ### Function Parameters
 
 Prefer a single object parameter when a function has multiple meaningful inputs. Use positional parameters when there is only one input or the ordering is conventional and obvious.

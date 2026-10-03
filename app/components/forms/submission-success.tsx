@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Copy, Home, RotateCcw } from "lucide-react";
-import { Link } from "react-router";
 
 import { Button } from "~/components/primitive/button/button";
 import { Card, CardContent } from "~/components/primitive/card/card";
+import { AppLink } from "~/navigation/app-link";
 
 /*===== Submission Confirmation =====*/
 
@@ -79,13 +79,7 @@ export function SubmissionSuccess({
             <RotateCcw aria-hidden="true" />
             {newSubmissionLabel}
           </Button>
-          <Button
-            nativeButton={false}
-            role="link"
-            variant="outline"
-            className="flex-1"
-            render={<Link to="/" viewTransition />}
-          >
+          <Button nativeButton={false} role="link" variant="outline" className="flex-1" render={<AppLink to="/" />}>
             <Home aria-hidden="true" />
             بازگشت به صفحه اصلی
           </Button>
