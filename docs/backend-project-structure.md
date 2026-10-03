@@ -13,11 +13,9 @@ app/
       database/
         database.middleware.ts     # injects the database and translates database failures
         database.errors.ts         # browser-safe public error definitions
-        database.middleware.integration.test.ts
       altcha/
         altcha.middleware.ts       # verifies any procedure input with an altcha field
         altcha.errors.ts
-        altcha.middleware.integration.test.ts
     feature-name/
       contract.ts
       procedure.ts
@@ -25,7 +23,7 @@ app/
       repository.ts
       validation.ts   # service-owned domain validation and normalization
       mapper.ts       # only when a conversion is needed
-      integration.test.ts
+      integration.test.ts         # optional, for consequential public behavior
   db/
     schema.ts
     errors.server.ts               # availability classification at query boundaries
@@ -49,8 +47,8 @@ when its internal data differs from its public API representation.
   outcome; do not throw oRPC or HTTP errors here.
 - **Repository** contains focused database reads and writes. It should not know about oRPC, HTTP, or API errors.
 - **Mapper** converts database or domain values into stable public DTOs.
-- **Integration test** exercises the feature through its public API and covers successful behavior and important failure
-  outcomes.
+- **Integration test**, when warranted, exercises consequential behavior through the public API. Keep representative
+  success and failure cases; shared middleware behavior is covered through feature tests rather than a suite per layer.
 
 ## Request Flow
 
@@ -72,7 +70,7 @@ resource route may call the same helper when serving a non-oRPC protocol, such a
 Implement features in this order:
 
 ```text
-contract -> repository and service -> optional mapper -> procedure -> integration test
+contract -> repository and service -> optional mapper -> procedure -> relevant validation
 ```
 
 Dependencies point inward: procedures depend on services, services coordinate repositories, and repositories depend only
@@ -118,7 +116,8 @@ repeated stacks. Arbitrary error properties are omitted, and server exception de
 public error responses.
 
 Middleware in `app/orpc/middleware/` uses `os` from `@orpc/server` and imports no feature contract, service, or root
-implementer. Each middleware has its own named folder containing its implementation, errors, and integration test.
+implementer. Each middleware has its own named folder containing its implementation and errors. Add a separate test only
+when a consequential behavior cannot be adequately covered through an existing feature test; see [Testing](./testing.md).
 Public error definitions live in separate browser-safe files that both middleware and feature contracts
 import directly. Each procedure chooses which middleware to apply.
 

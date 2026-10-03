@@ -66,4 +66,4 @@ The positioner accepts children for a custom popup/viewport. Wrap RTL compositio
 
 ## Previewing changes
 
-Run `npm run storybook`. Keep stories beside primitives, with Persian content, relevant variants, and long-text examples. Check light/dark themes and keyboard focus when changing interaction styles. Use `npm run typecheck` and focused Storybook interaction tests for API changes. Prettier reads `app/app.css` and sorts strings inside `defineStyles`, `cn`, and `cva`.
+Run `npm run storybook`. Keep stories beside primitives, with Persian content, relevant variants, and long-text examples. Stories are maintained UI documentation; the automatic Storybook test runner is disabled, while existing `play` functions still run when their stories are opened. Check light/dark themes, keyboard focus, and the accessibility panel manually when changing interaction styles. Use `npm run typecheck` for TypeScript API changes and only directly relevant application tests, as described in [Testing](./testing.md). Prettier reads `app/app.css` and sorts strings inside `defineStyles`, `cn`, and `cva`.

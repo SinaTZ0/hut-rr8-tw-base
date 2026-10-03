@@ -1,46 +1,56 @@
 # Testing
 
-Run project commands from the repository root.
+Before adding or expanding tests, read the [Testing policy for agents](./testing-policy.md). It explains why this project keeps tests small and how to choose worthwhile coverage for a new feature.
 
-## Application browser tests
+Keep a small safety net for consequential behavior. Run commands from the repository root, and choose only tests relevant to the change. Lint is required after code changes; typecheck is appropriate for TypeScript contract changes, and a production build for bundling or runtime concerns. Browser smoke tests are optional. Do not repeat a build already performed by Playwright.
 
-```sh
-npx playwright install chromium
-npm run test:e2e
-```
+## What the tests protect
 
-The Playwright suite builds the app, starts an isolated production server on `127.0.0.1:5183`, and stops it after the run. Leave that port free. It supplies its own ALTCHA secret and a deliberately unreachable database URL, so no application or test database is required. Tests solve the real security challenge and explicitly mock submission responses. The shared fixture mocks the three known visit statistics procedures; statistics tests override those responses to verify tracking and failure recovery. An unmocked RPC call or an uncaught browser error fails the test.
+The application has **10 API cases and 3 browser smoke tests**:
 
-Route tests live beside their route modules as `*.e2e.test.ts`. Shared browser fixtures and helpers live in `tests/e2e/`. The suite covers consultation validation, normalization, submission states, security reset, copying, keyboard focus, navigation, both forms' responsive accessibility, and the complaints flow's shared components.
+| Area                     | Retained cases                                                                                                                                                                                                        | What a failure means                                                                |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Consultation API (4)     | Saves normalized input and returns a tracking code; rejects a blank question without saving or consuming its proof; rejects malformed, tampered, and expired proofs; rejects proof reuse without a second submission. | Consultation persistence, validation, or CAPTCHA protection may be broken.          |
+| Complaints API (3)       | Saves normalized input and returns a tracking code; rejects a blank message without saving or consuming its proof; rejects proof reuse without a second submission.                                                   | Complaints persistence, validation, or single-use CAPTCHA protection may be broken. |
+| Visit statistics API (3) | Concurrent deliveries and retries count once; DNT prevents tracking and cookies; GPC prevents tracking and cookies.                                                                                                   | Visit counts may be inflated or a privacy preference may be ignored.                |
+| Browser smoke (3)        | Navigate from home and submit each form, displaying its tracking code; consultation preserves input after a network failure and succeeds on retry.                                                                    | A primary form flow may be unusable in the browser.                                 |
 
-Run one route or test while developing:
+Both forms share the CAPTCHA verification middleware, so malformed, tampered, and expired proofs are checked through consultation only. Each feature's persistence layer still has its own proof-reuse test.
 
-```sh
-npm run test:e2e -- app/routes/online-consultation
-npm run test:e2e -- --grep "network failure"
-npm run test:e2e -- --headed
-```
-
-Failure screenshots and traces are written to the gitignored `.tmp-codex/e2e-results/`. Inspect a trace with `npx playwright show-trace <trace.zip>`. Accessibility scans use axe and supplement the keyboard and behavior assertions; they do not replace manual accessibility review.
-
-See the Playwright documentation for [managed test servers](https://playwright.dev/docs/test-webserver), [API mocking](https://playwright.dev/docs/mock), and [accessibility testing](https://playwright.dev/docs/accessibility-testing).
+Tests focus on representative public behavior. Logging, timing, animation internals, exhaustive validation matrices, and automated theme/viewport accessibility scans are outside this small suite. Manual review remains necessary for visual and accessibility changes.
 
 ## API integration tests
 
+Configure `DATABASE_URL`, `TEST_DATABASE_URL`, and `ALTCHA_HMAC_SECRET`. `TEST_DATABASE_URL` must point to a separate, migrated test database; the application rejects a test URL selecting the application database. Tests create and clean up their own submission rows and isolated visit records. Statistics tests freeze the date in 2090 to separate their daily counters from normal development data.
+
 ```sh
-NODE_ENV=test npm run db:push
 npm run test:integration
+npm run test:integration -- app/orpc/online-consultation/integration.test.ts
+npm run test:integration -- app/orpc/complaints-and-feedback/integration.test.ts
+npm run test:integration -- app/orpc/website-visits/integration.test.ts
 ```
 
-Integration tests exercise the actual API, persistence, validation, challenge replay protection, error handling, and request timings. Configure `DATABASE_URL`, `TEST_DATABASE_URL`, and `ALTCHA_HMAC_SECRET`; the test database must differ from the application database. These tests create and clean up their own submission and statistics rows. Visit tests additionally cover concurrent deduplication, Tehran calendar boundaries, bigint precision, presence expiration, cookie/HTTPS behavior, privacy exclusions, and receipt retention. See [website visit statistics](./website-visit-statistics.md) for the counting rules.
+The command sets `NODE_ENV=test` so requests use the test database. Database preparation is an explicit setup step, not part of routine agent validation. If prerequisites are unavailable, report the limitation instead of automatically provisioning a database or pushing its schema.
 
-## Component tests and static checks
+## Optional browser smoke tests
 
-Storybook interaction tests remain separate from application browser tests:
+An existing Playwright Chromium installation and a free `127.0.0.1:5183` port are required.
 
 ```sh
-npx vitest run --project=storybook
-npm run lint
-npm run typecheck
-npm run build
+npm run test:e2e
+npm run test:e2e -- app/routes/online-consultation
+npm run test:e2e -- app/routes/complaints-and-feedback
+npm run test:e2e -- --grep "network failure"
 ```
+
+Playwright builds the app, starts an isolated production server, and stops it after the run. The server uses a test-only ALTCHA secret and an unreachable database URL. Tests solve the real public challenge but mock form submission responses and the three statistics procedures, so no database is required. These smoke tests verify browser behavior; the API tests above verify actual persistence. The fixture rejects unexpected RPC calls and uncaught browser errors.
+
+Failure screenshots and traces are written to `.tmp-codex/e2e-results/`. If Chromium is missing, report that prerequisite rather than automatically downloading it during a coding task.
+
+## Storybook as UI documentation
+
+```sh
+npm run storybook
+```
+
+All story files, controls, callback actions, and existing `play` functions are preserved. A `play` function performs interactions and assertions when its story is opened. The automatic Vitest Storybook runner is disabled; stories are not part of routine application test runs. Use the previews and accessibility panel for manual UI review.

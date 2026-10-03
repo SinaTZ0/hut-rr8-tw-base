@@ -11,6 +11,16 @@ This is a React Router v8 application using Framework Mode. The application's us
 - Put temporary scripts, diagnostics, experiments, and logs in `./.tmp-codex/`.
 - Create `./.tmp-codex/` as needed. It is gitignored and must never contain deliverable source files.
 
+## Testing and Validation
+
+- Before adding or expanding tests for a feature, read `docs/testing-policy.md` for the maintainer's rationale, test-selection guidance, and review expectations.
+- Keep automated tests small and focused on consequential business behavior, security boundaries, and meaningful regressions. Do not add exhaustive input matrices, implementation-detail assertions, library behavior tests, logging/timing checks, or tests for routine styling changes.
+- After code changes, run `npm run lint`. Run only existing tests directly relevant to the change; do not run the entire suite for every task. Browser smoke tests are optional and appropriate when changing their covered form flows or when explicitly requested.
+- Run `npm run typecheck` for TypeScript contract changes and `npm run build` for bundling or runtime concerns. Avoid repeating checks already performed, including the production build run by Playwright.
+- If test prerequisites are unavailable, report the limitation. Do not automatically provision databases, push schemas, or install browsers just to run tests.
+- Story files are maintained UI documentation. Preserve them during test cleanup, including their existing `play` functions, controls, and callback actions. Keep Storybook for manual previews and accessibility review; do not reintroduce its automatic test runner.
+- See `docs/testing.md` for the retained test inventory, prerequisites, and focused commands.
+
 ## Route Module Slices (Framework Mode)
 
 - **Keep Route Slices Flat:** In this repository, route module directories under `app/routes/` (or the configured `appDirectory`) must be flat. URL hierarchy does not imply folder nesting (e.g. use `dashboard_user/`, never `dashboard/user/`).

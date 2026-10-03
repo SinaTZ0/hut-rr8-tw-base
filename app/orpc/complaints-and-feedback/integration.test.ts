@@ -29,7 +29,16 @@ async function requestSubmission(input: unknown) {
   const response = await handleRpcRequest({ request });
   const body = serializer.deserialize(await response.json());
 
-  return { response, body };
+  // Register successful writes before assertions so failures still clean up their rows.
+  let record;
+  if (response.status === 201) {
+    [record] = await db
+      .select()
+      .from(complaintsAndFeedbackTable)
+      .where(eq(complaintsAndFeedbackTable.trackingCode, (body as { trackingCode: string }).trackingCode));
+    if (record) createdIds.push(record.id);
+  }
+  return { response, body, record };
 }
 
 async function getSolvedPayload(challenge: Challenge) {
@@ -39,13 +48,13 @@ async function getSolvedPayload(challenge: Challenge) {
   return Buffer.from(JSON.stringify({ challenge, solution })).toString("base64");
 }
 
-async function createEasyPayload(expiresAt = new Date(Date.now() + 20 * 60 * 1000)) {
+async function createEasyPayload() {
   // Fast signed challenges keep failure tests focused on API behavior.
   const challenge = await createChallenge({
     algorithm: "SHA-256",
     cost: 1,
     deriveKey: sha.deriveKey,
-    expiresAt,
+    expiresAt: new Date(Date.now() + 20 * 60 * 1000),
     hmacSignatureSecret: env.altchaHmacSecret,
     keyPrefix: "0",
   });
@@ -75,37 +84,21 @@ afterAll(async () => {
   await dbPool.end();
 });
 
-/*===== Complaints and Feedback Integration =====*/
+/*===== Complaints Safety Net =====*/
 
 describe("complaints and feedback API", () => {
-  it("serves widget-ready JSON and saves a normalized submission through oRPC", async () => {
+  it("saves a normalized pending complaint using the public widget challenge", async () => {
     const challengeResponse = await challengeLoader({} as Parameters<typeof challengeLoader>[0]);
     const challenge = (await challengeResponse.json()) as Challenge;
-
-    expect(challengeResponse.status).toBe(200);
     expect(challengeResponse.headers.get("Cache-Control")).toBe("no-store");
-    expect(challenge).toMatchObject({
-      parameters: { algorithm: "SHA-256", keyPrefix: "000" },
-      signature: expect.any(String),
-    });
-
-    const altcha = await getSolvedPayload(challenge);
-    const submission = { ...validSubmission, altcha };
-    const result = await requestSubmission(submission);
+    const result = await requestSubmission({ ...validSubmission, altcha: await getSolvedPayload(challenge) });
 
     expect(result.response.status).toBe(201);
     expect(result.body).toMatchObject({
       status: "pending",
       trackingCode: expect.stringMatching(/^HUT-[A-HJ-NP-Z2-9]{16}$/),
     });
-
-    const [record] = await db
-      .select()
-      .from(complaintsAndFeedbackTable)
-      .where(eq(complaintsAndFeedbackTable.trackingCode, (result.body as { trackingCode: string }).trackingCode));
-
-    createdIds.push(record.id);
-    expect(record).toMatchObject({
+    expect(result.record).toMatchObject({
       firstName: "علی",
       lastName: "رضایی",
       mobile: "09121234567",
@@ -113,152 +106,38 @@ describe("complaints and feedback API", () => {
       studentId: "123456",
       department: "ریاست دانشگاه",
       feedbackType: "suggestion",
-      message: "پیشنهاد من برای بهبود خدمات دانشگاه است.",
+      message: validSubmission.message.trim(),
       status: "pending",
       altchaNonce: challenge.parameters.nonce,
     });
+  });
 
-    /*------ The accepted challenge is single-use ------*/
+  it("rejects a blank message without saving or consuming the proof", async () => {
+    const altcha = await createEasyPayload();
+    const nonce = JSON.parse(Buffer.from(altcha, "base64").toString("utf8")).challenge.parameters.nonce;
+    const rejected = await requestSubmission({ ...validSubmission, message: " ", altcha });
+
+    expect(rejected.response.status).toBe(422);
+    expect(rejected.body).toMatchObject({ code: "INVALID_INPUT", data: { fields: { message: expect.any(String) } } });
+    expect(
+      await db.select().from(complaintsAndFeedbackTable).where(eq(complaintsAndFeedbackTable.altchaNonce, nonce)),
+    ).toHaveLength(0);
+    expect((await requestSubmission({ ...validSubmission, altcha })).response.status).toBe(201);
+  });
+
+  it("rejects proof reuse without creating a second complaint", async () => {
+    const submission = { ...validSubmission, altcha: await createEasyPayload() };
+    const accepted = await requestSubmission(submission);
+    expect(accepted.response.status).toBe(201);
 
     const replay = await requestSubmission(submission);
     expect(replay.response.status).toBe(422);
-    expect(replay.body).toMatchObject({
-      code: "INVALID_ALTCHA",
-      message: "اعتبارسنجی امنیتی قبلاً استفاده شده است.",
-    });
-
-    /*------ A new challenge creates a different code and stores empty optional fields as null ------*/
-
-    const secondChallenge = (await (
-      await challengeLoader({} as Parameters<typeof challengeLoader>[0])
-    ).json()) as Challenge;
-    const secondSubmission = await requestSubmission({
-      ...validSubmission,
-      altcha: await getSolvedPayload(secondChallenge),
-      lastName: "",
-      mobile: "",
-      email: "",
-      studentId: "",
-    });
-    expect(secondSubmission.response.status).toBe(201);
-    expect((secondSubmission.body as { trackingCode: string }).trackingCode).not.toBe(record.trackingCode);
-
-    const [secondRecord] = await db
-      .select()
-      .from(complaintsAndFeedbackTable)
-      .where(
-        eq(complaintsAndFeedbackTable.trackingCode, (secondSubmission.body as { trackingCode: string }).trackingCode),
-      );
-    createdIds.push(secondRecord.id);
-    expect(secondRecord).toMatchObject({ lastName: null, mobile: null, email: null, studentId: null });
-  });
-
-  it("rejects invalid form fields without consuming the challenge", async () => {
-    const altcha = await createEasyPayload();
-    const invalidFields = [
-      { field: "firstName", value: " " },
-      { field: "lastName", value: "a".repeat(101) },
-      { field: "mobile", value: "123" },
-      { field: "email", value: "user@.example.com" },
-      { field: "studentId", value: "12" },
-      { field: "department", value: "واحد نامعتبر" },
-      { field: "feedbackType", value: "question" },
-      { field: "message", value: "short" },
-    ] as const;
-
-    for (const { field, value } of invalidFields) {
-      const invalid = await requestSubmission({ ...validSubmission, [field]: value, altcha });
-      expect(invalid.response.status).toBe(422);
-      expect(invalid.body).toMatchObject({
-        code: "INVALID_INPUT",
-        data: { errors: {}, fields: { [field]: expect.any(String) } },
-      });
-    }
-
-    const multipleInvalid = await requestSubmission({
-      ...validSubmission,
-      altcha,
-      firstName: " ",
-      mobile: "123",
-      message: "short",
-    });
-    expect(multipleInvalid.response.status).toBe(422);
-    expect(multipleInvalid.body).toMatchObject({
-      code: "INVALID_INPUT",
-      data: {
-        errors: {},
-        fields: { firstName: expect.any(String), mobile: expect.any(String), message: expect.any(String) },
-      },
-    });
-
-    const accepted = await requestSubmission({ ...validSubmission, altcha });
-    expect(accepted.response.status).toBe(201);
-
-    const [record] = await db
-      .select()
-      .from(complaintsAndFeedbackTable)
-      .where(eq(complaintsAndFeedbackTable.trackingCode, (accepted.body as { trackingCode: string }).trackingCode));
-    createdIds.push(record.id);
-  });
-
-  it("normalizes Arabic digits and the international mobile prefix", async () => {
-    const result = await requestSubmission({
-      ...validSubmission,
-      altcha: await createEasyPayload(),
-      mobile: "+٩٨ ٩١٢-١٢٣٤٥٦٧",
-      studentId: "١٢٣٤٥٦",
-    });
-
-    expect(result.response.status).toBe(201);
-
-    const [record] = await db
-      .select()
-      .from(complaintsAndFeedbackTable)
-      .where(eq(complaintsAndFeedbackTable.trackingCode, (result.body as { trackingCode: string }).trackingCode));
-    createdIds.push(record.id);
-    expect(record).toMatchObject({ mobile: "09121234567", studentId: "123456" });
-  });
-
-  it("rejects malformed, tampered, and expired challenges", async () => {
-    const validPayload = await createEasyPayload();
-    const tampered = JSON.parse(Buffer.from(validPayload, "base64").toString("utf8"));
-    const unusedNonce = tampered.challenge.parameters.nonce as string;
-    tampered.challenge.parameters.salt = "changed";
-
-    const cases = [
-      "not base64!",
-      Buffer.from(JSON.stringify(tampered)).toString("base64"),
-      await createEasyPayload(new Date(Date.now() - 1000)),
-    ];
-
-    for (const altcha of cases) {
-      const result = await requestSubmission({ ...validSubmission, altcha });
-      expect(result.response.status).toBe(422);
-      expect(result.body).toMatchObject({
-        code: "INVALID_ALTCHA",
-        message: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است.",
-        data: { errors: {}, fields: { altcha: "اعتبارسنجی امنیتی نامعتبر یا منقضی شده است." } },
-      });
-    }
-
-    const storedRows = await db
-      .select()
-      .from(complaintsAndFeedbackTable)
-      .where(eq(complaintsAndFeedbackTable.altchaNonce, unusedNonce));
-    expect(storedRows).toHaveLength(0);
-  });
-
-  it("rejects structurally invalid submissions", async () => {
-    const result = await requestSubmission({ ...validSubmission, firstName: 42, altcha: await createEasyPayload() });
-
-    expect(result.response.status).toBe(422);
-    expect(result.body).toMatchObject({
-      code: "BAD_REQUEST",
-      defined: true,
-      data: {
-        fields: { firstName: expect.any(String) },
-        errors: { "Input validation (firstName)": expect.any(String) },
-      },
-    });
+    expect(replay.body).toMatchObject({ code: "INVALID_ALTCHA" });
+    expect(
+      await db
+        .select()
+        .from(complaintsAndFeedbackTable)
+        .where(eq(complaintsAndFeedbackTable.altchaNonce, accepted.record!.altchaNonce)),
+    ).toHaveLength(1);
   });
 });
