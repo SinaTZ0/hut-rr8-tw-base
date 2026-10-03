@@ -6,6 +6,8 @@ This describes the current university homepage and its primitives. The visual ch
 
 Use semantic tokens from [app.css](../app/app.css), including their paired foreground colors, rather than copying hex values into components.
 
+Use `text-prose-foreground` for long-form article paragraphs on the page background. It provides neutral charcoal text in light mode and follows `foreground` in dark mode. Headings and interface text continue to use their existing foreground tokens.
+
 | Role                | Current treatment                                                                    |
 | ------------------- | ------------------------------------------------------------------------------------ |
 | Page                | Off-white `background` with dark teal `foreground`; deep teal surfaces in dark mode  |

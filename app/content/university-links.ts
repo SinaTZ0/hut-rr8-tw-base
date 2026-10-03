@@ -16,6 +16,7 @@ export const destinations = {
   portal: "https://hut.ac.ir/",
   about: "https://hut.ac.ir/معرفی-دانشگاه",
   contact: "https://hut.ac.ir/ارتباط-با-ما",
+  privacyAndDataProtection: "/privacy-and-data-protection",
   systems: "https://hut.ac.ir/سامانه-ها",
   administration: "https://hut.ac.ir/اداری-و-مالی",
   calendar: "https://hut.ac.ir/web/edu/تقویم-آموزشی",
@@ -49,6 +50,7 @@ export const navigationGroups: { label: string; description: string; links: Univ
       { label: "حوزه ریاست", href: "https://hut.ac.ir/حوزه-ریاست" },
       { label: "فرم‌ها و آیین‌نامه‌ها", href: destinations.forms },
       { label: "دفترچه تلفن", href: destinations.phonebook },
+      { label: "حریم خصوصی و صیانت از داده‌ها", href: destinations.privacyAndDataProtection },
     ],
   },
   {

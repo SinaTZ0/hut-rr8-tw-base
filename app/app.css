@@ -48,6 +48,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-foreground: var(--foreground);
+  --color-prose-foreground: var(--prose-foreground);
   --color-background: var(--background);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -62,6 +63,7 @@
   color-scheme: light;
   --background: #fbfcfa;
   --foreground: #183d40;
+  --prose-foreground: #252a2b;
   --card: #ffffff;
   --card-foreground: #183d40;
   --popover: #ffffff;
@@ -100,6 +102,7 @@
   color-scheme: dark;
   --background: #101e20;
   --foreground: #edf4ef;
+  --prose-foreground: var(--foreground);
   --card: #182b2d;
   --card-foreground: #edf4ef;
   --popover: #182b2d;
